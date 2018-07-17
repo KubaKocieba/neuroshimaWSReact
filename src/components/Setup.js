@@ -1,6 +1,7 @@
 import React from 'react';
-import {connect, bindActionCreators} from 'react-redux'
-import {sendUser, addUser, listUsers, setUsers} from '../actions/index'
+import {connect} from 'react-redux'
+import {sendUser, addUser, listUsers, setUsers} from '../actions/setUsers'
+import * as gameActions from '../actions/gameActions'
 
 var ws;
 
@@ -18,11 +19,7 @@ class Init extends React.Component {
       sent: false
     }
 
-    this.initiateGame = this.initiateGame.bind(this);
     this.startGame = this.startGame.bind(this);
-  }
-
-  initiateGame(){
   }
 
   componentDidMount(){
@@ -35,14 +32,6 @@ class Init extends React.Component {
       });
 
       ws.send(JSON.stringify({text: 'open'}));
-
-      // window.onbeforeunload = function() {
-      //   ws.onclose = () => {
-      //
-      //   }
-
-      //   ws.close()
-      //   };
     };
 
     window.onbeforeunload = function () {
@@ -70,6 +59,10 @@ class Init extends React.Component {
       else if (data.type === 'tooMany')
       {
         alert('Sorry, maximum player number reached. Cannot join the game!');
+      }
+      else if (data.type === 'gameStarted')
+      {
+        this.props.startGame();
       }
     }
   }
@@ -114,9 +107,7 @@ class Init extends React.Component {
   }
 
   startGame(){
-    // this.setState({
-    //   started: true
-    // });
+    ws.send(JSON.stringify({type: 'start_the_game'}));
   }
 
   changeName(event)
@@ -126,9 +117,9 @@ class Init extends React.Component {
   }
 
   render(){
-    console.log('state');
-    console.log(this.state);
-    console.log(this.props.users);
+    // console.log('state');
+    // console.log(this.state);
+    // console.log(this.props.users);
 
     return (
       <div id="setupPage">
@@ -157,6 +148,7 @@ class Init extends React.Component {
                     <div key="player0">
                       <p>You:</p>
                       <div onClick={this.changeName.bind(this)} key={`${index}_${user.name}_${user.army}`}><p>{user.name}</p><p>{user.army}</p></div>
+                      <button>Ready</button>
                     </div>
                   );
                 }
@@ -166,7 +158,7 @@ class Init extends React.Component {
           }
 
         </div>
-        <button onClick={this.startGame}>Start</button>
+        <button disabled={this.props.users.length < 2} onClick={this.startGame}>Start</button>
 
       </div>
       )
@@ -178,7 +170,8 @@ function mapDispatchToProps(dispatch){
     sendUser: (user) => dispatch(sendUser(user)),
     addUser: (user) => dispatch(addUser(user)),
     list: () => dispatch(listUsers()),
-    setUsers: (users) => dispatch(setUsers(users))
+    setUsers: (users) => dispatch(setUsers(users)),
+    startGame: () => dispatch(gameActions.startGame())
   }
 }
 

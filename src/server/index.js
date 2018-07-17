@@ -26,37 +26,48 @@ wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
     message = JSON.parse(message);
 
-    if (message.type && message.type === 'connect_user')
+    if (message.type)
     {
-      if (users.length < 4)
+      switch(message.type)
       {
-        users = [...users, ...message.data];
+        case 'connect_user':
+          if (users.length < 4)
+          {
+            users = [...users, ...message.data];
+
+            broadcast({type: 'userList', users}, ws);
+          }
+          else
+          {
+            ws.send(JSON.stringify({type: 'tooMany'}),ws);
+          }
+          break;
+      case 'detach_player':
+        let {user, army} = message,
+            player = {
+              user,
+              army
+            };
+
+        let toErase = users.findIndex((el)=> {
+          return el['name'] == player['user'] && el['army'] == player['army'];
+        });
+
+        if (toErase >= 0)
+        {
+          users.splice(toErase, 1);
+        }
 
         broadcast({type: 'userList', users}, ws);
-      }
-      else
-      {
-        ws.send(JSON.stringify({type: 'tooMany'}),ws);
-      }
-    }
-    else if (message.type && message.type === 'detach_player')
-    {
-      let {user, army} = message,
-          player = {
-            user,
-            army
-          };
+        break
 
-      let toErase = users.findIndex((el)=> {
-        return el['name'] == player['user'] && el['army'] == player['army'];
-      });
+      case 'start_the_game':
+        broadcast({type: 'gameStarted', users}, ws)
+        break;
 
-      if (toErase >= 0)
-      {
-        users.splice(toErase, 1);
+      default:
+        console.log('Unsupported message');
       }
-
-      broadcast({type: 'userList', users}, ws);
     }
     else{
       console.log(message);

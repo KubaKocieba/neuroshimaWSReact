@@ -1,6 +1,8 @@
-import React, { Component } from 'react';
-import {Setup} from './components/Setup.js'
-import HexBoard from './components/hexBoard.js';
+import React, { Component } from 'react'
+import {Setup} from './components/Setup'
+import HexBoard from './components/hexBoard'
+import GameDeck from './components/gameDeck'
+import {connect} from 'react-redux'
 
 import './App.css';
 import './style/setup.css';
@@ -30,10 +32,6 @@ class App extends Component {
     console.log(result);
   }
 
-  handleOpen(){
-    console.log('opened');
-  }
-
   render() {
     return (
       <div className="App">
@@ -43,16 +41,31 @@ class App extends Component {
         <div id="main">
         { !this.state.started ? (
           <div>
-          <div className="App-intro">
-            <div id="startHex" onClick={this.start}>&#x2B22;</div>
-          </div>
-          <div id="clickInfo">To get started, click on the hex.</div>
+            <div className="App-intro">
+              <div id="startHex" onClick={this.start}>&#x2B22;</div>
+            </div>
+            <div id="clickInfo">To get started, click on the hex.</div>
+            </div>
+          ) : (!this.props.game.started ? <Setup /> : <HexBoard /> )
+        }
         </div>
-       ) : <Setup /> }
-        </div>
+        {this.props.game.started ? <GameDeck name={'Kupa gówna'}/> : ''}
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state) =>{
+  return {
+    users: state.users,
+    game: state.game
+  }
+}
+
+const mapDispatchActions = (dispatch) => {
+  return {
+
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchActions)(App);
