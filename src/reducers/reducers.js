@@ -9,17 +9,11 @@ const users = (state = [], action) => {
       action.socket.send(JSON.stringify({type: 'connect_user', data: [usr]}));
       return state;
 
-    case 'ADD_USER':
-      let users = action.data;
-      console.log(action.data);
-
-      return [...state, ...action.data];
-
     case 'LIST_USERS':
       return state;
 
     case 'SET_USERS':
-      console.log('ustawiamy userow');
+    case 'ADD_USER':
 
       if(state !== action.data)
       {

@@ -23,9 +23,6 @@ class Init extends React.Component {
   }
 
   initiateGame(){
-    this.action({
-      type: 'ADD_USER'
-    })
   }
 
   componentDidMount(){
@@ -38,11 +35,20 @@ class Init extends React.Component {
       });
 
       ws.send(JSON.stringify({text: 'open'}));
+
+      // window.onbeforeunload = function() {
+      //   ws.onclose = () => {
+      //
+      //   }
+
+      //   ws.close()
+      //   };
     };
 
-    ws.onclose = () => {
-      ws.send(JSON.stringify({text: 'kupa'}));
-    }
+    window.onbeforeunload = function () {
+      ws.send(JSON.stringify({type: 'detach_player', user: sessionStorage.getItem('player'), army:sessionStorage.getItem('army') }));
+      ws.close();
+    };
 
     ws.onmessage = (event) =>{
       var data = JSON.parse(event.data);
@@ -93,8 +99,8 @@ class Init extends React.Component {
       sent: true
     });
 
-    localStorage.setItem('player', this.state.user.name);
-    localStorage.setItem('army', this.state.user.army);
+    sessionStorage.setItem('player', this.state.user.name);
+    sessionStorage.setItem('army', this.state.user.army);
   }
 
   setArmy(event){
@@ -113,14 +119,21 @@ class Init extends React.Component {
     // });
   }
 
+  changeName(event)
+  {
+    event.preventDefault(); // Let's stop this event.
+    console.log(event);
+  }
+
   render(){
     console.log('state');
     console.log(this.state);
+    console.log(this.props.users);
 
     return (
       <div id="setupPage">
         <div id="players">
-            {!this.state.sent && !localStorage.getItem('player') ? (
+            {!this.state.sent && !sessionStorage.getItem('player') ? (
               <div id="player">
                 <label>You: </label>
                 <p><input onChange={this.playerInput.bind(this)} type="text" id="playerId" /></p>
@@ -139,11 +152,11 @@ class Init extends React.Component {
                   <div key={`${index}_${user.name}_${user.army}`}><p>{user.name}</p><p>{user.army}</p></div>
                   );
 
-                if(localStorage.getItem('player')=== user.name && localStorage.getItem('army')=== user.army){
+                if(sessionStorage.getItem('player')=== user.name && sessionStorage.getItem('army')=== user.army){
                   pl = (
                     <div key="player0">
                       <p>You:</p>
-                      <div key={`${index}_${user.name}_${user.army}`}><p>{user.name}</p><p>{user.army}</p></div>
+                      <div onClick={this.changeName.bind(this)} key={`${index}_${user.name}_${user.army}`}><p>{user.name}</p><p>{user.army}</p></div>
                     </div>
                   );
                 }
