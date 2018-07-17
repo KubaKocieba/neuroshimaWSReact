@@ -1,0 +1,78 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+body{
+  overflow: hidden;
+  background-color: #222;
+}
+
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+  height: 420px;
+}
+
+#main{
+  height: 500px;
+  width: 100%;
+}
+
+#clickInfo,
+.App-intro,
+#main {
+  text-align: center;
+  background: white;
+}
+
+.App-header:last-child
+{
+  height: 245px;
+  overflow: hidden;
+}
+
+#startHex
+{
+  position: absolute;
+  font-size: 300px;
+  color: black;
+  z-index:32000;
+  -webkit-text-stroke: 20px red;
+  transition: all 1s ease-out;
+  left: calc(50% - 131px);
+}
+
+div#startHex::after {
+    position: absolute;
+    content: 'K';
+    font-size: 80px;
+    -webkit-text-stroke: 0;
+    color: white;
+    top: 130px;
+    margin-left: -160px;
+}
+
+#startHex:hover{
+  transform: rotate(1turn);
+  cursor: pointer;
+}
+
+.hex{
+  display: inline;
+  font-size: 50px;
+}
