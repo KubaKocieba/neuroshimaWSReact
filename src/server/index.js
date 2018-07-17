@@ -6,7 +6,7 @@ var users = [];
 
 const broadcast = (data, ws) => {
   wss.clients.forEach((client) => {
-
+    console.log(client === ws);
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(data))
     }

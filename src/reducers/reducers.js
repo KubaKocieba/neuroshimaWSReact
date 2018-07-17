@@ -6,19 +6,27 @@ const users = (state = [], action) => {
     case 'SEND_USER':
       let usr = {name: action.name, army: action.army, socket: action.socket};
 
-      action.socket.send(JSON.stringify({type: 'connect_user', data:[...state, usr]}));
+      action.socket.send(JSON.stringify({type: 'connect_user', data: [usr]}));
       return state;
 
     case 'ADD_USER':
       let users = action.data;
-      console.log('added user');
-      console.log(state.concat(users));
+      console.log(action.data);
 
-      return state.concat(users);
+      return [...state, ...action.data];
 
     case 'LIST_USERS':
-      console.log('all users');
-      console.log(state);
+      return state;
+
+    case 'SET_USERS':
+      console.log('ustawiamy userow');
+
+      if(state !== action.data)
+      {
+        state = [...action.data];
+        return state;
+      }
+
       return state;
 
     default:

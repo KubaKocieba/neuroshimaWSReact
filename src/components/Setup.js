@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect, bindActionCreators} from 'react-redux'
-import {sendUser, addUser, listUsers} from '../actions/index'
+import {sendUser, addUser, listUsers, setUsers} from '../actions/index'
 
 var ws;
 
@@ -37,19 +37,25 @@ class Init extends React.Component {
         socket: ws
       });
 
-      ws.send(JSON.stringify({text: 'kupa'}));
+      ws.send(JSON.stringify({text: 'open'}));
     };
+
+    ws.onclose = () => {
+      ws.send(JSON.stringify({text: 'kupa'}));
+    }
 
     ws.onmessage = (event) =>{
       var data = JSON.parse(event.data);
 
-      console.log(data);
+      console.log(this.props.list());
 
       if(data.type === "userList"){
         this.setState({
           ...this.state,
           allPlayers: data.users
         });
+
+        this.props.setUsers(data.users);
       }
 
       else if (data.type === 'userAdded') {
@@ -77,7 +83,18 @@ class Init extends React.Component {
 
   playerAdd()
   {
-    this.props.sendUser({name: this.state.user.name, army: this.state.user.army, socket: this.state.socket});
+    !this.state.sent ?
+      this.props.sendUser({name: this.state.user.name, army: this.state.user.army, socket: this.state.socket})
+      :
+      '';
+
+    this.setState({
+      ...this.state,
+      sent: true
+    });
+
+    localStorage.setItem('player', this.state.user.name);
+    localStorage.setItem('army', this.state.user.army);
   }
 
   setArmy(event){
@@ -97,28 +114,41 @@ class Init extends React.Component {
   }
 
   render(){
+    console.log('state');
+    console.log(this.state);
+
     return (
       <div id="setupPage">
         <div id="players">
-          <div id="player">
-            <label>You: </label>
-            <p><input onChange={this.playerInput.bind(this)} type="text" id="playerId" /></p>
-              <p><label>Army:</label></p>
-              <div id="armySelection">
-                <div  onClick={this.setArmy.bind(this)}><span id="celestial">Celestial</span></div>
-                <div  onClick={this.setArmy.bind(this)}><span id="modesto">Modesto</span></div>
-                <div  onClick={this.setArmy.bind(this)}><span id="liar">Liar</span></div>
-              </div>
-              <button onClick={this.playerAdd.bind(this)}>OK</button>
-          </div>
+            {!this.state.sent && !localStorage.getItem('player') ? (
+              <div id="player">
+                <label>You: </label>
+                <p><input onChange={this.playerInput.bind(this)} type="text" id="playerId" /></p>
+                <p><label>Army:</label></p>
+                <div id="armySelection">
+                  <div  onClick={this.setArmy.bind(this)}><span id="celestial">Celestial</span></div>
+                  <div  onClick={this.setArmy.bind(this)}><span id="modesto">Modesto</span></div>
+                  <div  onClick={this.setArmy.bind(this)}><span id="liar">Liar</span></div>
+                </div>
+                <button onClick={this.playerAdd.bind(this)}>OK</button>
+              </div>) : ''
+            }
           {
             this.props.users.map((user, index)=>{
-              if (user.name !== this.state.user.name && user.army !== this.state.user.army)
-              {
-                return (
+                var pl = (
                   <div key={`${index}_${user.name}_${user.army}`}><p>{user.name}</p><p>{user.army}</p></div>
                   );
-              }
+
+                if(localStorage.getItem('player')=== user.name && localStorage.getItem('army')=== user.army){
+                  pl = (
+                    <div key="player0">
+                      <p>You:</p>
+                      <div key={`${index}_${user.name}_${user.army}`}><p>{user.name}</p><p>{user.army}</p></div>
+                    </div>
+                  );
+                }
+
+                return pl;
             })
           }
 
@@ -134,13 +164,12 @@ function mapDispatchToProps(dispatch){
   return {
     sendUser: (user) => dispatch(sendUser(user)),
     addUser: (user) => dispatch(addUser(user)),
-    listUsers: () => dispatch(listUsers())
+    list: () => dispatch(listUsers()),
+    setUsers: (users) => dispatch(setUsers(users))
   }
 }
 
 function mapStateToProps(state){
-  console.log(state);
-
   return {
     users: state.users
   }

@@ -19,3 +19,10 @@ export const listUsers = () => {
     type: 'LIST_USERS'
   }
 }
+
+export const setUsers = (newData) => {
+  return {
+    type: 'SET_USERS',
+    data: newData
+  }
+}
