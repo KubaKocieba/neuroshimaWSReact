@@ -1,7 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+//import {connect} from 'react-redux'
 
 class hexBoard extends Component {
+
   render() {
+    console.log(this.props.activePlayer);
+
     return (
         <div id="hexCluster">
           <div>

@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import {Socket} from '../components/Setup';
 import users from './users'
 import game from './game'
 

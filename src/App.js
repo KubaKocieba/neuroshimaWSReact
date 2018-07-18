@@ -12,7 +12,7 @@ class App extends Component {
     super(props);
 
     this.state = {
-      started: false,
+      started: true,
       server: 'server'
     }
 
@@ -26,13 +26,10 @@ class App extends Component {
     });
   }
 
-  handleData(data){
-    let result = JSON.parse(data);
-
-    console.log(result);
-  }
-
   render() {
+    let activeNum = this.props.game.activePlayer,
+        activePlayer = this.props.users[activeNum];
+
     return (
       <div className="App">
         <header className="App-header">
@@ -46,10 +43,10 @@ class App extends Component {
             </div>
             <div id="clickInfo">To get started, click on the hex.</div>
             </div>
-          ) : (!this.props.game.started ? <Setup /> : <HexBoard /> )
+          ) : (!this.props.game.started ? <Setup /> : <HexBoard activePlayer={activePlayer} /> )
         }
         </div>
-        {this.props.game.started ? <GameDeck name={'Kupa gówna'}/> : ''}
+        {this.props.game.started ? <GameDeck activePlayer={activePlayer} name={'Kupa gówna'}/> : ''}
       </div>
     );
   }

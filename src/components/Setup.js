@@ -23,7 +23,7 @@ class Init extends React.Component {
   }
 
   componentDidMount(){
-    ws = new WebSocket('ws://localhost:8989');
+    ws = new WebSocket('ws://10.0.166.67:8989');
 
     ws.onopen = ()=> {
       this.setState({
@@ -36,6 +36,7 @@ class Init extends React.Component {
 
     window.onbeforeunload = function () {
       ws.send(JSON.stringify({type: 'detach_player', user: sessionStorage.getItem('player'), army:sessionStorage.getItem('army') }));
+      sessionStorage.clear();
       ws.close();
     };
 
@@ -62,7 +63,12 @@ class Init extends React.Component {
       }
       else if (data.type === 'gameStarted')
       {
-        this.props.startGame();
+        this.props.startGame(data.activePlayer);
+      }
+      else if (data.type === 'nextPlayerStarted')
+      {
+        console.log('nextPlayer');
+        this.props.nextPlayer(data.activePlayer);
       }
     }
   }
@@ -82,10 +88,9 @@ class Init extends React.Component {
 
   playerAdd()
   {
-    !this.state.sent ?
-      this.props.sendUser({name: this.state.user.name, army: this.state.user.army, socket: this.state.socket})
-      :
-      '';
+    if (!this.state.sent){
+      this.props.sendUser({name: this.state.user.name, army: this.state.user.army, socket: this.state.socket});
+    }
 
     this.setState({
       ...this.state,
@@ -108,6 +113,7 @@ class Init extends React.Component {
 
   startGame(){
     ws.send(JSON.stringify({type: 'start_the_game'}));
+
   }
 
   changeName(event)
@@ -171,7 +177,8 @@ function mapDispatchToProps(dispatch){
     addUser: (user) => dispatch(addUser(user)),
     list: () => dispatch(listUsers()),
     setUsers: (users) => dispatch(setUsers(users)),
-    startGame: () => dispatch(gameActions.startGame())
+    startGame: (activePlayer) => dispatch(gameActions.startGame(activePlayer)),
+    nextPlayer: (nextPlayer) => dispatch(gameActions.nextPlayer(nextPlayer))
   }
 }
 

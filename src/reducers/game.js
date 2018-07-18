@@ -3,7 +3,10 @@ export default (state = {
 }, action) => {
   switch(action.type){
     case 'START_GAME':
-      return {...state, started: true};
+      return {...state, started: true, activePlayer: action.payload};
+
+    case'NEXT_PLAYER':
+      return {...state, activePlayer: action.payload};
 
     default:
       return state;

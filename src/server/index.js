@@ -12,6 +12,34 @@ const broadcast = (data, ws) => {
   })
 }
 
+let activePlayer = 0;
+
+const clockTimer = (player, usersArr,ws) => {
+      console.log(`player ${player} is doing some moves`);
+
+      if (!usersArr.length){
+        console.log('no players left. game finished. waiting for new players and start...');
+        return;
+      }
+
+      let nextPlayer = ++player;
+
+      if (nextPlayer > usersArr.length - 1){
+          nextPlayer = 0;
+      }
+
+      setTimeout(()=>{
+        broadcast(
+        {
+          type: 'nextPlayerStarted',
+          activePlayer: nextPlayer,
+          users: usersArr
+        }, ws);
+
+        clockTimer(nextPlayer, usersArr, ws);
+      }, 90000);
+}
+
 wss.on('connection', function connection(ws) {
   console.log('one connected');
 
@@ -62,8 +90,31 @@ wss.on('connection', function connection(ws) {
         break
 
       case 'start_the_game':
-        broadcast({type: 'gameStarted', users}, ws)
+        activePlayer = Math.floor(users.length * Math.random());
+
+        broadcast(
+          {
+           type: 'gameStarted',
+           activePlayer,
+           users
+          }, ws);
+
+          clockTimer(activePlayer, users, ws);
         break;
+
+      // case 'next_player':
+      //   let nextPlayer = ++message.activePlayer;
+
+      //   if (nextPlayer > users.length - 1){
+      //     nextPlayer = 0;
+      //   }
+
+      //   broadcast(
+      //     {
+      //      type: 'nextplayerStarted',
+      //      activePlayer: nextPlayer,
+      //      users
+      //     }, ws);
 
       default:
         console.log('Unsupported message');
