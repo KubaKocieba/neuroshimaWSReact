@@ -12,32 +12,18 @@ const broadcast = (data, ws) => {
   })
 }
 
-let activePlayer = 0;
+var activePlayer = 0;
 
-const clockTimer = (player, usersArr,ws) => {
-      console.log(`player ${player} is doing some moves`);
+const playerChange = (player, usersArr, ws) => {
 
-      if (!usersArr.length){
-        console.log('no players left. game finished. waiting for new players and start...');
-        return;
-      }
+  console.log(`player ${users[player].name} is doing some moves`);
 
-      let nextPlayer = ++player;
-
-      if (nextPlayer > usersArr.length - 1){
-          nextPlayer = 0;
-      }
-
-      setTimeout(()=>{
-        broadcast(
-        {
-          type: 'nextPlayerStarted',
-          activePlayer: nextPlayer,
-          users: usersArr
-        }, ws);
-
-        clockTimer(nextPlayer, usersArr, ws);
-      }, 90000);
+  broadcast(
+  {
+    type: 'nextPlayerStarted',
+    activePlayer: player,
+    users: usersArr
+  }, ws);
 }
 
 wss.on('connection', function connection(ws) {
@@ -61,6 +47,8 @@ wss.on('connection', function connection(ws) {
         case 'connect_user':
           if (users.length < 4)
           {
+            console.log('user ' + message.data[0].name + ' has joined the game');
+
             users = [...users, ...message.data];
 
             broadcast({type: 'userList', users}, ws);
@@ -83,6 +71,7 @@ wss.on('connection', function connection(ws) {
 
         if (toErase >= 0)
         {
+          console.log('user ' + player['user'] + ' has left the game.')
           users.splice(toErase, 1);
         }
 
@@ -92,6 +81,7 @@ wss.on('connection', function connection(ws) {
       case 'start_the_game':
         activePlayer = Math.floor(users.length * Math.random());
 
+        console.log('game started');
         broadcast(
           {
            type: 'gameStarted',
@@ -99,25 +89,28 @@ wss.on('connection', function connection(ws) {
            users
           }, ws);
 
-          clockTimer(activePlayer, users, ws);
+          break;
+
+      case 'next_player':
+        if (!users.length){
+           console.log('no players left. game finished. waiting for new players and start...');
+           activePlayer = 0;
+           users = [];
+          return;
+        }
+
+          activePlayer++;
+
+          if (activePlayer > users.length - 1){
+            activePlayer = 0;
+          }
+
+          playerChange(activePlayer, users, ws);
         break;
-
-      // case 'next_player':
-      //   let nextPlayer = ++message.activePlayer;
-
-      //   if (nextPlayer > users.length - 1){
-      //     nextPlayer = 0;
-      //   }
-
-      //   broadcast(
-      //     {
-      //      type: 'nextplayerStarted',
-      //      activePlayer: nextPlayer,
-      //      users
-      //     }, ws);
 
       default:
         console.log('Unsupported message');
+        break;
       }
     }
     else{

@@ -27,8 +27,9 @@ class App extends Component {
   }
 
   render() {
-    let activeNum = this.props.game.activePlayer,
-        activePlayer = this.props.users[activeNum];
+    let activePlayer = this.props.users[this.props.game.activePlayer];
+
+    console.log(activePlayer);
 
     return (
       <div className="App">

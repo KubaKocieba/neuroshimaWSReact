@@ -5,9 +5,23 @@ export const startGame = (activePlayer) => {
   }
 }
 
-export const nextPlayer = (nextPlayer) => {
+export const nextPlayerStarted = (nextPlayer) => {
+  return {
+    type: 'NEXT_PLAYER_STARTED',
+    payload: nextPlayer
+  }
+}
+
+export const nextPlayer = (socket) => {
   return {
     type: 'NEXT_PLAYER',
-    payload: nextPlayer
+    payload: socket
+  }
+}
+
+export const saveSocket = (socket) => {
+  return {
+    type: 'SAVE_SOCKET',
+    payload: socket
   }
 }

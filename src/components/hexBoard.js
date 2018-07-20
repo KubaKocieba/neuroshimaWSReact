@@ -4,8 +4,6 @@ import React, { Component } from 'react'
 class hexBoard extends Component {
 
   render() {
-    console.log(this.props.activePlayer);
-
     return (
         <div id="hexCluster">
           <div>

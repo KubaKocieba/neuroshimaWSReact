@@ -1,22 +1,38 @@
 import React from 'react'
 import Tile from './Tile'
-import '../style/gameDeck.css';
+import {Armies} from '../helpers/armies'
+import '../style/gameDeck.css'
+import {connect} from 'react-redux'
+import * as gameActions from '../actions/gameActions'
+
+var time;
 
 class GameDeck extends React.Component{
   constructor(props){
     super(props);
 
+
     this.state = {
-      timer: null
+      timer: null,
+      player: sessionStorage.getItem('player'),
+      tiles: Armies[sessionStorage.getItem('army')]
     }
+
+    this.tilesInitiate = this.tilesInitiate.bind(this);
+    this.turn          = this.turn.bind(this);
+    this.drawTiles     = this.drawTiles.bind(this);
   }
 
-  componentDidMount(){
-    let minutes = 1,
-        seconds = 30;
+  turn(activePlayer){
+      let minutes = 0,
+          seconds = 5;
 
-    const turn = () => {
-      var time = setInterval(()=> {
+      if (activePlayer === sessionStorage.getItem('player')){
+        this.drawTiles();
+        console.log(this.state.tiles);
+      }
+
+      time = setInterval(()=> {
         seconds--;
 
         if (seconds < 0 && minutes){
@@ -25,10 +41,15 @@ class GameDeck extends React.Component{
         }
 
         if(seconds < 0 && !minutes){
-          minutes = 1;
-          seconds = 30;
+          minutes = 0;
+          seconds = 5;
+
+
+          if (activePlayer === sessionStorage.getItem('player')){
+            this.props.game.socket.send(JSON.stringify({type: 'next_player'}));
+          }
+
           clearInterval(time);
-          turn();
         }
 
         const checkSeconds = () => {
@@ -37,11 +58,74 @@ class GameDeck extends React.Component{
         };
 
         this.setState({timer: `${minutes} : ${checkSeconds()}`});
-      }, 1000);
+      }, 1000)
+  }
+
+  componentDidMount(){
+    this.turn(this.props.activePlayer.name);
+    this.tilesInitiate();
+  }
+
+  tilesInitiate(){
+    this.setState({
+      ...this.state,
+      tiles: Armies[sessionStorage.getItem('army')]
+    })
+  }
+
+  componentWillReceiveProps(nextProps){
+    console.log('received props');
+    console.log(nextProps);
+    this.turn(nextProps.activePlayer.name);
+  }
+
+  drawTiles(){
+    var hq = this.state.tiles.findIndex(tile => tile.name.indexOf('hq') !== -1);
+
+    var tiles       = this.state.tiles,
+        handTiles,
+        draw;
+
+    if(!hq)
+    {
+      handTiles = tiles.splice(hq, 1);
+
+      console.log('hq was in the set');
+    }
+    else
+    {
+      let drawIndex;
+
+      handTiles = [];
+
+      var drawed = [];
+
+      for(let i = 0; i < 3; i++)
+      {
+        const draw =() => Math.floor(Math.random() * tiles.length);
+
+        drawIndex = draw();
+
+        while(drawed.indexOf(drawIndex) !== -1){
+           drawIndex = draw();
+        }
+
+        drawed.push(drawIndex);
+        console.log('wylosowano index', drawIndex);
+        handTiles.push(tiles.splice(drawIndex, 1));
+      }
     }
 
-    turn();
+    console.log(handTiles);
+    console.log(tiles);
+
+    this.setState({
+      ...this.state,
+      tiles,
+      hand: handTiles
+    });
   }
+
 
   render(){
     let you = sessionStorage.getItem('player'),
@@ -62,4 +146,18 @@ class GameDeck extends React.Component{
   }
 }
 
-export default GameDeck;
+const mapActions = (dispatch) =>{
+  return {
+    nextPlayer: (socket) => dispatch(gameActions.nextPlayer(socket))
+  }
+}
+
+
+const mapStateToProps = (state) => {
+  return {
+    users: state.users,
+    game:  state.game
+  }
+}
+
+export default connect(mapStateToProps, mapActions)(GameDeck);

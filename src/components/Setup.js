@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux'
 import {sendUser, addUser, listUsers, setUsers} from '../actions/setUsers'
 import * as gameActions from '../actions/gameActions'
+import {Armies} from '../helpers/armies'
 
 var ws;
 
@@ -25,6 +26,8 @@ class Init extends React.Component {
   componentDidMount(){
     ws = new WebSocket('ws://10.0.166.67:8989');
 
+    this.props.saveSocket(ws);
+
     ws.onopen = ()=> {
       this.setState({
         ...this.state,
@@ -43,8 +46,6 @@ class Init extends React.Component {
     ws.onmessage = (event) =>{
       var data = JSON.parse(event.data);
 
-      console.log(this.props.list());
-
       if(data.type === "userList"){
         this.setState({
           ...this.state,
@@ -52,10 +53,6 @@ class Init extends React.Component {
         });
 
         this.props.setUsers(data.users);
-      }
-
-      else if (data.type === 'userAdded') {
-        this.receivePlayer(data.users);
       }
       else if (data.type === 'tooMany')
       {
@@ -67,8 +64,11 @@ class Init extends React.Component {
       }
       else if (data.type === 'nextPlayerStarted')
       {
-        console.log('nextPlayer');
-        this.props.nextPlayer(data.activePlayer);
+        console.log(data.activePlayer);
+        this.props.nextPlayerStarted(data.activePlayer);
+      }
+      else{
+        console.log(data);
       }
     }
   }
@@ -82,14 +82,10 @@ class Init extends React.Component {
     });
   }
 
-  receivePlayer(data){
-    this.props.addUser(data);
-  }
-
   playerAdd()
   {
     if (!this.state.sent){
-      this.props.sendUser({name: this.state.user.name, army: this.state.user.army, socket: this.state.socket});
+      this.props.sendUser({name: this.state.user.name, army: this.state.user.army, socket: this.state.socket, tiles: Armies[this.state.user.army]});
     }
 
     this.setState({
@@ -113,7 +109,6 @@ class Init extends React.Component {
 
   startGame(){
     ws.send(JSON.stringify({type: 'start_the_game'}));
-
   }
 
   changeName(event)
@@ -151,7 +146,7 @@ class Init extends React.Component {
 
                 if(sessionStorage.getItem('player')=== user.name && sessionStorage.getItem('army')=== user.army){
                   pl = (
-                    <div key="player0">
+                    <div key={`you ${index}_${user.name}_${user.army}`}>
                       <p>You:</p>
                       <div onClick={this.changeName.bind(this)} key={`${index}_${user.name}_${user.army}`}><p>{user.name}</p><p>{user.army}</p></div>
                       <button>Ready</button>
@@ -178,7 +173,8 @@ function mapDispatchToProps(dispatch){
     list: () => dispatch(listUsers()),
     setUsers: (users) => dispatch(setUsers(users)),
     startGame: (activePlayer) => dispatch(gameActions.startGame(activePlayer)),
-    nextPlayer: (nextPlayer) => dispatch(gameActions.nextPlayer(nextPlayer))
+    nextPlayerStarted: (nextPlayer) => dispatch(gameActions.nextPlayerStarted(nextPlayer)),
+    saveSocket: (socket) => dispatch(gameActions.saveSocket(socket))
   }
 }
 
