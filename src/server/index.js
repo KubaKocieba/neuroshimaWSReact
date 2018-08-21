@@ -108,8 +108,17 @@ wss.on('connection', function connection(ws) {
           playerChange(activePlayer, users, ws);
         break;
 
+        case 'last_round':
+            broadcast(
+                {
+                    type: 'lastRound',
+                    activePlayer,
+                    users
+                }, ws);
+            break;
+
       default:
-        console.log('Unsupported message');
+        console.log('Unsupported message: ', message.type);
         break;
       }
     }

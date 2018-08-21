@@ -72,7 +72,39 @@ div#startHex::after {
   cursor: pointer;
 }
 
+#hexCluster{
+  transform: rotate(-90deg);
+  top: 50px;
+}
+
+#hexCluster div{
+  margin-top: -50px;
+}
+
 .hex{
   display: inline;
-  font-size: 50px;
+  font-size: 100px;
+  color: black;
+  -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+}
+
+.hex::after,
+.hex span{
+  position: absolute;
+  font-size: 30px;
+  color: green;
+  transform: rotate(90deg);
+  margin-top: 43px;
+  margin-left: -53px;
+  -webkit-text-fill-color: black;
+}
+
+.hex:hover {
+  -webkit-text-fill-color: red;
+}
+
+.hex span:hover{
+  -webkit-text-fill-color: white;
 }

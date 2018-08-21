@@ -1,17 +1,14 @@
 import React from 'react'
 
-export default class extends React.Component {
-  constructor(props)
-  {
-    super(props);
-  }
+const tile = (props) => {
+  return (
+    <span onDragStart={props.dragStart} onDragOver={props.dragFurther}>
+        <span>{props.name}</span><span onClick={props.click}>X</span>
+        <span onClick={props.userState}>S</span>
+      <span>&#x2B22;</span>
+    </span>
 
-  render(){
-    return (
-      <span>
-        <span>&#x2B22;</span>
-      </span>
-
-    )
-  }
+  )
 }
+
+export default tile;

@@ -64,8 +64,11 @@ class Init extends React.Component {
       }
       else if (data.type === 'nextPlayerStarted')
       {
-        console.log(data.activePlayer);
+        //console.log(data.activePlayer);
         this.props.nextPlayerStarted(data.activePlayer);
+      }
+      else if (data.type === 'lastRound'){
+        this.props.lastRound(data.activePlayer);
       }
       else{
         console.log(data);
@@ -174,7 +177,8 @@ function mapDispatchToProps(dispatch){
     setUsers: (users) => dispatch(setUsers(users)),
     startGame: (activePlayer) => dispatch(gameActions.startGame(activePlayer)),
     nextPlayerStarted: (nextPlayer) => dispatch(gameActions.nextPlayerStarted(nextPlayer)),
-    saveSocket: (socket) => dispatch(gameActions.saveSocket(socket))
+    saveSocket: (socket) => dispatch(gameActions.saveSocket(socket)),
+      lastRound: (user) => dispatch(gameActions.lastRound(user))
   }
 }
 

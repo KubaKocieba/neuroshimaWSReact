@@ -25,3 +25,10 @@ export const saveSocket = (socket) => {
     payload: socket
   }
 }
+
+export const lastRound = (playerInitiatedLastRound) => {
+  return {
+    type: 'LAST_ROUND',
+      payload: playerInitiatedLastRound
+  }
+}

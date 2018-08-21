@@ -14,16 +14,16 @@ export const Armies = {
       name: 'hqCelestial',power: directiveGauss ,hp:20
     },
     { name: 'laserShooter',
-      amount: 4,
+      amount: 1,
       speed: 2
     },
     { name: 'armouredLaserShooter',
-      amount: 2,
+      amount: 1,
       speed: 1,
       defense: 1
     },
     { name: 'boost',
-      amount: 3
+      amount: 1
     }
   ],
 
@@ -32,16 +32,16 @@ export const Armies = {
       name: 'hqModesto', hp: 20, power: initiativeBoost
     },
     { name: 'laserShooter',
-      amount: 4,
+      amount: 1,
       speed: 2
     },
     { name: 'armouredLaserShooter',
-      amount: 2,
+      amount: 1,
       speed: 1,
       defense: 1
     },
     { name: 'boost',
-      amount: 3
+      amount: 1
     }
   ],
 
@@ -50,16 +50,16 @@ export const Armies = {
       name: 'hqLiar', hp:20, power: switchUnitTillFirstAttack
     },
     { name: 'laserShooter',
-      amount: 4,
+      amount: 1,
       speed: 2
     },
     { name: 'armouredLaserShooter',
-      amount: 2,
+      amount: 1,
       speed: 1,
       defense: 1
     },
     { name: 'boost',
-      amount: 3
+      amount: 1
     }
   ]
 

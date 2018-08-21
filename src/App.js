@@ -26,10 +26,24 @@ class App extends Component {
     });
   }
 
+    dragOverAction(event){
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('here is a dragged over');
+    }
+
+    dropped(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        var data = event.dataTransfer.getData("text/html");
+
+        console.log('dropped here');
+        console.log(data);
+    }
+
   render() {
     let activePlayer = this.props.users[this.props.game.activePlayer];
-
-    console.log(activePlayer);
 
     return (
       <div className="App">
@@ -44,7 +58,7 @@ class App extends Component {
             </div>
             <div id="clickInfo">To get started, click on the hex.</div>
             </div>
-          ) : (!this.props.game.started ? <Setup /> : <HexBoard activePlayer={activePlayer} /> )
+          ) : (!this.props.game.started ? <Setup /> : <HexBoard board={this.props.board} dragOverAction={this.dragOverAction} dropped={this.dropped} activePlayer={activePlayer} /> )
         }
         </div>
         {this.props.game.started ? <GameDeck activePlayer={activePlayer} name={'Kupa gówna'}/> : ''}
@@ -56,7 +70,8 @@ class App extends Component {
 const mapStateToProps = (state) =>{
   return {
     users: state.users,
-    game: state.game
+    game: state.game,
+      board: state.board
   }
 }
 
