@@ -33,8 +33,6 @@ class App extends Component {
     }
 
     dropped(event){
-        event.preventDefault();
-        event.stopPropagation();
 
         var data = event.dataTransfer.getData("text/html");
 
@@ -58,7 +56,7 @@ class App extends Component {
             </div>
             <div id="clickInfo">To get started, click on the hex.</div>
             </div>
-          ) : (!this.props.game.started ? <Setup /> : <HexBoard board={this.props.board} dragOverAction={this.dragOverAction} dropped={this.dropped} activePlayer={activePlayer} /> )
+          ) : (!this.props.game.started ? <Setup /> : <HexBoard board={this.props.board}  activePlayer={activePlayer} /> )
         }
         </div>
         {this.props.game.started ? <GameDeck activePlayer={activePlayer} name={'Kupa gówna'}/> : ''}

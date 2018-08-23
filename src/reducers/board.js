@@ -3,11 +3,10 @@ const boardStructure = () => {
 
     for (let i = 1; i <= 19;i++){
         hexFields[i]  = {
-            full: false,
+            content: false,
             sides: hexFieldNeighbour(i)
         }
     }
-
     return hexFields;
 }
 
@@ -58,6 +57,7 @@ let hexFieldNeighbour = (field) => {
     }
 
     return neighbours;
+    
 }
 
 export default (state = {
@@ -67,9 +67,13 @@ export default (state = {
         case 'TILE_MOVE':
             return state;
         case 'TILE_SET':
+            action.socket.send(JSON.stringify({type: 'tile_set', data: action.tile}));
+            return state;
+
+        case 'TILE_ONBOARD':
             const stateCpy = { ...state};
 
-            stateCpy.field[action.which].full = action.tile;
+            stateCpy.fields[action.which].content = action.tile;
 
             return stateCpy;
         default:

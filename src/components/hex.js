@@ -7,7 +7,12 @@ export default class Hex extends React.Component {
 
     render(){
         return (
-            <div className="hex" onClick={this.propsPrint}>&#x2B22;{this.props.children}</div>
+            <div className="hex"
+                 onDrop={(event) => !this.props.grid.content ? this.props.drop(event, this.props.fieldNumber) : (event.preventDefault(), event.stopPropagation(),console.log('zajeta'))}
+                 onDragOver={(event)=> this.props.dragOverAction(event)}
+                 onClick={this.propsPrint}>&#x2B22;
+                <span>{this.props.grid.content ? this.props.grid.content.name : null}</span>
+                 </div>
         )
     }
 }

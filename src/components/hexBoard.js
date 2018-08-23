@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import {connect} from 'react-redux'
+import * as boardActions from '../actions/boardActions'
+import * as gameActions from '../actions/gameActions'
 
 import Hex from './hex';
 class hexBoard extends React.Component {
@@ -6,11 +9,27 @@ class hexBoard extends React.Component {
         super(props);
     }
 
-    state = {
-        board: this.props.board
-    }
     componentDidMount(){
-        console.log(this.state.board);
+        //console.log(this.state.board);
+    }
+
+    onDropHandle = (event, onField) =>{
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('drop');
+
+        console.log('dropped here on field', onField);
+        let tileReceived = JSON.parse(event.dataTransfer.getData('text/plain'));
+
+        this.props.setTile({...tileReceived, target: onField}, this.props.game.socket);
+        //this.props.tileRemoveFromHand(this.props.game.playerData,tileReceived);
+
+    }
+
+    onDragOverHandle = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('drag over');
     }
 
 
@@ -20,15 +39,22 @@ class hexBoard extends React.Component {
       const fields = (i,j) => {
           var row = [];
           for (let x = 0;x <= j; x++){
-              //row.push(<div className="hex">&#x2B22;<span>{fieldsOrder.shift()}</span></div>);
               let key = fieldsOrder.shift();
-              row.push(<Hex key={key} grid={this.state.board.fields[key]}><span>{key}</span></Hex>);
+              row.push(
+                  <Hex
+                      fieldNumber={key}
+                      key={key}
+                      drop={this.onDropHandle}
+                      grid={this.props.board.fields[key]}
+                      dragOverAction={this.onDragOverHandle}>
+                  </Hex>
+              );
           }
 
           return row;
       }
 
-        const rotatedRows = () => {
+        const fillHexes = () => {
             var rows = [];
 
             for(let i = 0; i <= 4 ; i++){
@@ -60,40 +86,24 @@ class hexBoard extends React.Component {
 
     return (
         <div id="hexCluster">
-            {rotatedRows()}
-            {/*<div>*/}
-              {/*<div className="hex">&#x2B22;<span>1</span></div>*/}
-              {/*<div className="hex">&#x2B22;<span>2</span></div>*/}
-              {/*<div className="hex">&#x2B22;<span>3</span></div>*/}
-            {/*</div>*/}
-            {/*<div>*/}
-            {/*<div className="hex">&#x2B22;<span>4</span></div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-          {/*</div>*/}
-          {/*<div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-          {/*</div>*/}
-          {/*<div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex" onDragOver={this.dragOverAction } onDrop={this.dropped}>&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-          {/*</div>*/}
-          {/*<div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-            {/*<div className="hex">&#x2B22;</div>*/}
-          {/*</div>*/}
-
+            {fillHexes()}
         </div>
       );
     }
   }
 
-  export default hexBoard;
+const mapStateToProps = (state) => {
+    return {
+        board: state.board,
+        game: state.game
+    }
+}
+
+  const mapActions = (dispatch) => {
+    return {
+        setTile: (tile, socket) => dispatch(boardActions.setTile(tile, socket)),
+        tileRemoveFromHand: (player, tile) => dispatch(gameActions.tileRemoveFromHand(player,tile))
+    }
+  }
+
+  export default connect(mapStateToProps, mapActions)(hexBoard);

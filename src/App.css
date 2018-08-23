@@ -92,12 +92,14 @@ div#startHex::after {
 
 .hex::after,
 .hex span{
+  width: 50px;
   position: absolute;
-  font-size: 30px;
+  font-size: 14px;
+  word-wrap: break-word;
   color: green;
   transform: rotate(90deg);
   margin-top: 43px;
-  margin-left: -53px;
+  margin-left: -73px;
   -webkit-text-fill-color: black;
 }
 

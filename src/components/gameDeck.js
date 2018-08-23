@@ -1,9 +1,9 @@
 import React from 'react'
+import {connect} from 'react-redux'
+import '../style/gameDeck.css'
+import * as gameActions from '../actions/gameActions'
 import Tile from './Tile'
 import {Armies} from '../helpers/armies'
-import '../style/gameDeck.css'
-import {connect} from 'react-redux'
-import * as gameActions from '../actions/gameActions'
 
 var time;
 
@@ -22,15 +22,15 @@ class GameDeck extends React.Component{
     this.drawTiles     = this.drawTiles.bind(this);
   }
 
-  turn(activePlayer){
-    if (!!this.props.game.lastRound && activePlayer === this.props.users[this.props.game.playerInitiatedLastRound].name) {
+  turn(activePlayerName){
+    if (!!this.props.game.lastRound && activePlayerName === this.props.users[this.props.game.playerInitiatedLastRound].name) {
           alert('GAME OVER');
     }
     else {
         let minutes = 1,
             seconds = 30;
 
-        if (activePlayer === sessionStorage.getItem('player')) {
+        if (activePlayerName === sessionStorage.getItem('player')) {
             this.drawTiles();
         }
 
@@ -53,7 +53,7 @@ class GameDeck extends React.Component{
                 minutes = 1;
                 seconds = 30;
 
-                if (activePlayer === sessionStorage.getItem('player')) {
+                if (activePlayerName === sessionStorage.getItem('player')) {
                     this.finishTurn();
                 }
             }
@@ -67,6 +67,14 @@ class GameDeck extends React.Component{
   componentDidMount(){
     this.turn(this.props.activePlayer.name);
   }
+
+    componentDidUpdate(prevProps){
+        if (prevProps.activePlayer !== this.props.activePlayer) {
+            clearInterval(time);
+            this.setState({timer: null});
+            this.turn(this.props.activePlayer.name);
+        }
+    }
 
   tilesFillWithRepeated(tiles){
     let setTiles = tiles.reduce((res, curr)=>{
@@ -82,18 +90,11 @@ class GameDeck extends React.Component{
     return [Armies[sessionStorage.getItem('army')][0], ...setTiles];
   }
 
-  componentWillReceiveProps(nextProps){
-    clearInterval(time);
-    this.setState({timer: null});
-    this.turn(nextProps.activePlayer.name);
-
-    console.log(this.props.game);
-  }
-
   finishTurn(){
     clearInterval(time);
     this.setState({timer: null});
-    this.props.game.socket.send(JSON.stringify({type: 'next_player'}));
+    //this.props.game.socket.send(JSON.stringify({type: 'next_player'}));
+    this.props.nextPlayer(this.props.game.socket, this.state);
   }
 
   drawTiles(){
@@ -139,8 +140,8 @@ class GameDeck extends React.Component{
         hand: handTiles
       });
 
-      console.log('tiles left');
-      console.log(tiles.length);
+      // console.log('tiles left');
+      // console.log(tiles.length);
 
       if (tiles.length <= 0 && !this.props.game.lastRound) {
         this.props.game.socket.send(JSON.stringify({type: 'last_round'}));
@@ -164,18 +165,13 @@ class GameDeck extends React.Component{
     }
 
     dragStartHandle(event, tile){
-      console.log('dragStart');
-      console.log(tile);
-      //event.dataTransfer.effectAllowed = "move";
+      console.log('started');
+        event.dataTransfer.setData('text/plain', JSON.stringify(tile));
     }
 
     dragHandle(event){
+      event.preventDefault();
       console.log('dragHandle');
-      console.log(event.pageX);
-    }
-
-    showUsersState = () => {
-      console.log(this.props.board);
     }
 
   render(){
@@ -185,7 +181,14 @@ class GameDeck extends React.Component{
         whoIsActiveNow = isYou ? 'Your turn!!!' : 'Active player is: ',
         playerName = isYou ? sessionStorage.getItem('player') : this.props.activePlayer.name,
         tilesInHand = this.state.hand.map((tile, index) => {
-            return <Tile userState={this.showUsersState} dragStart={(ev)=> this.dragStartHandle(ev, tile)} dragFurther={this.dragHandle} name={tile.name} click={() => this.handleTileRemove(index)} key={index}></Tile>;
+            return (
+                <Tile dragStart={(ev)=> this.dragStartHandle(ev, tile)}
+                      dragFurther={this.dragHandle}
+                      name={tile.name} click={() => this.handleTileRemove(index)}
+                      key={index}
+                      dragEnd={(ev)=> this.dragEnd(ev, tile)}
+                >
+                </Tile>);
         }) ;
 
     return (
@@ -204,7 +207,7 @@ class GameDeck extends React.Component{
 
 const mapActions = (dispatch) =>{
   return {
-    nextPlayer: (socket) => dispatch(gameActions.nextPlayer(socket))
+    nextPlayer: (socket, playerData) => dispatch(gameActions.nextPlayer(socket,playerData))
   }
 }
 
@@ -212,8 +215,7 @@ const mapActions = (dispatch) =>{
 const mapStateToProps = (state) => {
   return {
     users: state.users,
-    game:  state.game,
-    board: state.board
+    game:  state.game
   }
 }
 

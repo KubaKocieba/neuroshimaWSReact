@@ -96,7 +96,7 @@ wss.on('connection', function connection(ws) {
            console.log('no players left. game finished. waiting for new players and start...');
            activePlayer = 0;
            users = [];
-          return;
+           return;
         }
 
           activePlayer++;
@@ -108,17 +108,23 @@ wss.on('connection', function connection(ws) {
           playerChange(activePlayer, users, ws);
         break;
 
+        case 'tile_set':
+            broadcast({
+              type: 'tilePutOnBoard',
+              tile: message.data
+            }, ws);
+            break;
+
         case 'last_round':
-            broadcast(
-                {
-                    type: 'lastRound',
-                    activePlayer,
-                    users
-                }, ws);
+            broadcast({
+              type: 'lastRound',
+              activePlayer,
+              users
+            }, ws);
             break;
 
       default:
-        console.log('Unsupported message: ', message.type);
+        console.log('Unsupported message');
         break;
       }
     }

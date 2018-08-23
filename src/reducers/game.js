@@ -9,15 +9,20 @@ export default (state = {
       return {...state, started: true, activePlayer: action.payload};
 
     case'NEXT_PLAYER':
-      action.payload.send(JSON.stringify({type: 'next_player'}));
+      action.socket.send(JSON.stringify({type: 'next_player', playerData: action.playerData}));
       return state;
 
     case'NEXT_PLAYER_STARTED':
-      //console.log('starting player', action.payload);
-      return {...state, activePlayer: action.payload};
+      return {...state, activePlayer: action.activePlayer, playerData: action.playerData};
 
       case 'LAST_ROUND':
         return {...state, lastRound: true, playerInitiatedLastRound: action.payload};
+
+      case 'HAND_REMOVE_TILE':
+        let beforeRemove = {...state};
+
+        console.log(beforeRemove);
+        return {...state};
 
     default:
       return state;

@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux'
 import {sendUser, addUser, listUsers, setUsers} from '../actions/setUsers'
 import * as gameActions from '../actions/gameActions'
+import * as boardActions from "../actions/boardActions";
 import {Armies} from '../helpers/armies'
 
 var ws;
@@ -46,33 +47,40 @@ class Init extends React.Component {
     ws.onmessage = (event) =>{
       var data = JSON.parse(event.data);
 
-      if(data.type === "userList"){
-        this.setState({
-          ...this.state,
-          allPlayers: data.users
-        });
+      switch(data.type){
+        case "userList":
+          this.setState({
+            ...this.state,
+            allPlayers: data.users
+          });
 
-        this.props.setUsers(data.users);
-      }
-      else if (data.type === 'tooMany')
-      {
+          this.props.setUsers(data.users);
+          break;
+
+      case 'tooMany':
         alert('Sorry, maximum player number reached. Cannot join the game!');
-      }
-      else if (data.type === 'gameStarted')
-      {
+        break;
+
+      case 'gameStarted':
         this.props.startGame(data.activePlayer);
-      }
-      else if (data.type === 'nextPlayerStarted')
-      {
-        //console.log(data.activePlayer);
-        this.props.nextPlayerStarted(data.activePlayer);
-      }
-      else if (data.type === 'lastRound'){
+        break;
+
+        case 'nextPlayerStarted':
+        this.props.nextPlayerStarted(data);
+        break;
+
+      case 'lastRound':
         this.props.lastRound(data.activePlayer);
-      }
-      else{
+        break;
+
+          case 'tilePutOnBoard':
+            console.log(data);
+              this.props.putTile(data.tile);
+              break;
+      default :
         console.log(data);
-      }
+        break;
+    }
     }
   }
 
@@ -178,7 +186,8 @@ function mapDispatchToProps(dispatch){
     startGame: (activePlayer) => dispatch(gameActions.startGame(activePlayer)),
     nextPlayerStarted: (nextPlayer) => dispatch(gameActions.nextPlayerStarted(nextPlayer)),
     saveSocket: (socket) => dispatch(gameActions.saveSocket(socket)),
-      lastRound: (user) => dispatch(gameActions.lastRound(user))
+      lastRound: (user) => dispatch(gameActions.lastRound(user)),
+      putTile: (tile) => dispatch(boardActions.putTile(tile))
   }
 }
 
