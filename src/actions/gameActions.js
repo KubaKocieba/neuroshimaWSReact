@@ -34,10 +34,3 @@ export const lastRound = (playerInitiatedLastRound) => {
     payload: playerInitiatedLastRound
   }
 };
-
-export const tileRemoveFromHand = (player, tile) => {
-    return {
-        type: 'HAND_REMOVE_TILE',
-        payload:   { player , tile }
-    }
-};

@@ -19,7 +19,7 @@ class Init extends React.Component {
       allPlayers: [],
       socket: null,
       sent: false
-    }
+    };
 
     this.startGame = this.startGame.bind(this);
   }
@@ -57,30 +57,31 @@ class Init extends React.Component {
           this.props.setUsers(data.users);
           break;
 
-      case 'tooMany':
-        alert('Sorry, maximum player number reached. Cannot join the game!');
-        break;
+        case 'tooMany':
+          alert('Sorry, maximum player number reached. Cannot join the game!');
+          break;
 
-      case 'gameStarted':
-        this.props.startGame(data.activePlayer);
-        break;
+        case 'gameStarted':
+          this.props.startGame(data.activePlayer);
+          break;
 
         case 'nextPlayerStarted':
-        this.props.nextPlayerStarted(data);
-        break;
+          this.props.nextPlayerStarted(data);
+          break;
 
-      case 'lastRound':
-        this.props.lastRound(data.activePlayer);
-        break;
+        case 'lastRound':
+          this.props.lastRound(data.activePlayer);
+          break;
 
-          case 'tilePutOnBoard':
-            console.log(data);
-              this.props.putTile(data.tile);
-              break;
-      default :
-        console.log(data);
-        break;
-    }
+        case 'tilePutOnBoard':
+          console.log(data);
+          this.props.putTile(data.tile);
+          break;
+
+        default :
+          console.log(data);
+          break;
+      }
     }
   }
 
@@ -180,14 +181,12 @@ class Init extends React.Component {
 function mapDispatchToProps(dispatch){
   return {
     sendUser: (user) => dispatch(sendUser(user)),
-    addUser: (user) => dispatch(addUser(user)),
-    list: () => dispatch(listUsers()),
     setUsers: (users) => dispatch(setUsers(users)),
     startGame: (activePlayer) => dispatch(gameActions.startGame(activePlayer)),
     nextPlayerStarted: (nextPlayer) => dispatch(gameActions.nextPlayerStarted(nextPlayer)),
     saveSocket: (socket) => dispatch(gameActions.saveSocket(socket)),
-      lastRound: (user) => dispatch(gameActions.lastRound(user)),
-      putTile: (tile) => dispatch(boardActions.putTile(tile))
+    lastRound: (user) => dispatch(gameActions.lastRound(user)),
+    putTile: (tile) => dispatch(boardActions.putTile(tile))
   }
 }
 

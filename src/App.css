@@ -31,6 +31,9 @@ body{
 #main{
   height: 500px;
   width: 100%;
+  /*
+  padding-left: 50px;
+  */
 }
 
 #clickInfo,
@@ -75,6 +78,10 @@ div#startHex::after {
 #hexCluster{
   transform: rotate(-90deg);
   top: 50px;
+  width: 500px;
+  height: 500px;
+  margin-left: auto;
+  text-align: center;
 }
 
 #hexCluster div{

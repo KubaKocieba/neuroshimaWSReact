@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import '../style/gameDeck.css'
 import * as gameActions from '../actions/gameActions'
 import Tile from './Tile'
+import {tilesFillWithRepeated} from '../helpers/assignArmies'
 import {Armies} from '../helpers/armies'
 
 var time;
@@ -12,11 +13,13 @@ class GameDeck extends React.Component{
     super(props);
 
     this.state = {
-        timer: null,
-        player: sessionStorage.getItem('player'),
-        tiles: this.tilesFillWithRepeated(Armies[sessionStorage.getItem('army')]),
-        hand: []
+      timer: null,
+      tiles: tilesFillWithRepeated(Armies[sessionStorage.getItem('army')]),
+      player: sessionStorage.getItem('player'),
+      ...this.props.playerData
     };
+
+    // console.log(this.state);
 
     this.turn          = this.turn.bind(this);
     this.drawTiles     = this.drawTiles.bind(this);
@@ -27,77 +30,69 @@ class GameDeck extends React.Component{
           alert('GAME OVER');
     }
     else {
-        let minutes = 1,
-            seconds = 30;
+      let minutes = 1,
+          seconds = 30;
 
-        if (activePlayerName === sessionStorage.getItem('player')) {
-            this.drawTiles();
-        }
+      if (activePlayerName === sessionStorage.getItem('player')) {
+          this.drawTiles();
+      }
 
-        const checkSeconds = () => {
-            if (seconds < 10) return '0' + seconds;
-            return seconds;
-        };
+      const checkSeconds = () => {
+          if (seconds < 10) return '0' + seconds;
+          return seconds;
+      };
 
-        this.setState({timer: `${minutes} : ${checkSeconds()}`});
+      this.setState({timer: `${minutes} : ${checkSeconds()}`});
 
-        time = setInterval(() => {
-            seconds--;
+      time = setInterval(() => {
+          seconds--;
 
-            if (seconds < 0 && minutes) {
-                seconds = 59;
-                minutes = 0;
-            }
+          if (seconds < 0 && minutes) {
+              seconds = 59;
+              minutes = 0;
+          }
 
-            if (seconds < 0 && !minutes) {
-                minutes = 1;
-                seconds = 30;
+          if (seconds < 0 && !minutes) {
+              minutes = 1;
+              seconds = 30;
 
-                if (activePlayerName === sessionStorage.getItem('player')) {
-                    this.finishTurn();
-                }
-            }
+              if (activePlayerName === sessionStorage.getItem('player')) {
+                  this.finishTurn();
+              }
+          }
 
-            this.setState({timer: `${minutes} : ${checkSeconds()}`});
-        }, 1000);
+          this.setState({timer: `${minutes} : ${checkSeconds()}`});
+      }, 1000);
     }
-
   }
 
   componentDidMount(){
+    console.log('mounted');
     this.turn(this.props.activePlayer.name);
   }
 
-    componentDidUpdate(prevProps){
-        if (prevProps.activePlayer !== this.props.activePlayer) {
-            clearInterval(time);
-            this.setState({timer: null});
-            this.turn(this.props.activePlayer.name);
-        }
+  componentDidUpdate(prevProps){
+    if (prevProps.activePlayer !== this.props.activePlayer) {
+      clearInterval(time);
+      this.setState({timer: null});
+      this.turn(this.props.activePlayer.name);
     }
 
-  tilesFillWithRepeated(tiles){
-    let setTiles = tiles.reduce((res, curr)=>{
-        for(let i = 0; i < curr.amount; i++){
-            var {amount, ...rest} = curr;
-
-            res = res.concat([rest]);
-        }
-
-        return res;
-    }, []);
-
-    return [Armies[sessionStorage.getItem('army')][0], ...setTiles];
+    if(prevProps.playerData !== this.props.playerData){
+      this.setState({
+        ...this.props.playerData
+      })
+    }
   }
 
-  finishTurn(){
+  finishTurn = () => {
     clearInterval(time);
     this.setState({timer: null});
     //this.props.game.socket.send(JSON.stringify({type: 'next_player'}));
     this.props.nextPlayer(this.props.game.socket, this.state);
   }
 
-  drawTiles(){
+  drawTiles= () => {
     var tiles = this.state.tiles.slice();
 
     if (tiles.length)
@@ -136,12 +131,10 @@ class GameDeck extends React.Component{
 
       this.setState({
         ...this.state,
-        tiles,
-        hand: handTiles
+        tiles
       });
 
-      // console.log('tiles left');
-      // console.log(tiles.length);
+      this.props.tilesToHand(handTiles);
 
       if (tiles.length <= 0 && !this.props.game.lastRound) {
         this.props.game.socket.send(JSON.stringify({type: 'last_round'}));
@@ -152,27 +145,23 @@ class GameDeck extends React.Component{
      }
   }
 
-    handleTileRemove(index){
-      let hand = this.state.hand.slice();
+  handleTileRemove = (index) => {
+    let hand = this.state.hand.slice();
 
-      hand.splice(index, 1);
+    this.props.tileRemoveFromHand(hand[index]);
 
-      this.setState({
-          ...this.state,
-          hand
-      })
+  }
 
-    }
+  dragStartHandle(event, tile){
+    this.state.hand.length < 3 ? (
+      event.dataTransfer.setData('text/plain', JSON.stringify(tile))
+    ) : alert('Please remove 1 tile first');
+  }
 
-    dragStartHandle(event, tile){
-      console.log('started');
-        event.dataTransfer.setData('text/plain', JSON.stringify(tile));
-    }
-
-    dragHandle(event){
-      event.preventDefault();
-      console.log('dragHandle');
-    }
+  dragHandle(event){
+    event.preventDefault();
+    console.log('dragHandle');
+  }
 
   render(){
     let you = sessionStorage.getItem('player'),

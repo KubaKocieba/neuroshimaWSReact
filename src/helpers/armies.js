@@ -1,12 +1,12 @@
-import directiveGauss from './Modesto'
+import directiveGauss from './Modesto';
 
 const initiativeBoost = () => {
   console.log('all units surrounding base gain +1 to speed');
-}
+};
 
 const switchUnitTillFirstAttack = () => {
   console.log('switch unit with another already placed on the board till their first attack, after that they come back and another switch is possible')
-}
+};
 
 export const Armies = {
   'celestial' : [
@@ -23,7 +23,7 @@ export const Armies = {
       defense: 1
     },
     { name: 'boost',
-      amount: 1
+      amount: 3
     }
   ],
 
@@ -41,7 +41,7 @@ export const Armies = {
       defense: 1
     },
     { name: 'boost',
-      amount: 1
+      amount: 3
     }
   ],
 
@@ -59,8 +59,7 @@ export const Armies = {
       defense: 1
     },
     { name: 'boost',
-      amount: 1
+      amount: 3
     }
   ]
-
 }

@@ -11,14 +11,13 @@ class App extends Component {
   constructor(props){
     super(props);
 
-    this.state = {
-      started: true,
-      server: 'server'
-    }
-
     this.start = this.start.bind(this);
-
   }
+
+  state = {
+    started: true,
+    hand: []
+  };
 
   start(){
     this.setState({
@@ -26,21 +25,42 @@ class App extends Component {
     });
   }
 
-    dragOverAction(event){
-        event.preventDefault();
-        event.stopPropagation();
-        console.log('here is a dragged over');
-    }
+  dragOverAction(event){
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('here is a dragged over');
+  }
 
-    dropped(event){
+  handRemove = (tile) => {
+    let hand = this.state.hand.slice();
 
-        var data = event.dataTransfer.getData("text/html");
+    const toErase = hand.findIndex(handTile=>{
+      return handTile.name === tile.name;
+    });
 
-        console.log('dropped here');
-        console.log(data);
-    }
+    hand.splice(toErase, 1);
+
+    this.setState({
+      ...this.state,
+      hand
+    });
+  };
+
+  handAddTiles = (tiles) => {
+    var currHand = this.state.hand.slice();
+
+    console.log(currHand);
+    console.log(tiles);
+
+    this.setState({
+      ...this.state,
+      hand: tiles
+    });
+  };
 
   render() {
+    console.log(this.state.hand);
+
     let activePlayer = this.props.users[this.props.game.activePlayer];
 
     return (
@@ -56,10 +76,12 @@ class App extends Component {
             </div>
             <div id="clickInfo">To get started, click on the hex.</div>
             </div>
-          ) : (!this.props.game.started ? <Setup /> : <HexBoard board={this.props.board}  activePlayer={activePlayer} /> )
+          ) : (!this.props.game.started ? <Setup /> : <HexBoard tileRemoveFromHand={this.handRemove} board={this.props.board} activePlayer={activePlayer} /> )
         }
         </div>
-        {this.props.game.started ? <GameDeck activePlayer={activePlayer} name={'Kupa gówna'}/> : ''}
+        {
+          this.props.game.started ?
+            <GameDeck tileRemoveFromHand={this.handRemove} tilesToHand={this.handAddTiles} playerData={{...this.state}} activePlayer={activePlayer} name={'Kupa gówna'}/> : ''}
       </div>
     );
   }
@@ -69,7 +91,7 @@ const mapStateToProps = (state) =>{
   return {
     users: state.users,
     game: state.game,
-      board: state.board
+    board: state.board
   }
 }
 
