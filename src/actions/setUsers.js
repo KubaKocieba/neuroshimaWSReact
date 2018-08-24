@@ -5,22 +5,16 @@ export const sendUser = (newData) => {
   }
 }
 
-export const addUser = (newData) => {
+export const setUsers = (newData) => {
   return {
-    type: 'ADD_USER',
+    type: 'SET_USERS',
     data: newData
   }
 }
 
-export const listUsers = () => {
+export const editUser = (newData) => {
   return {
-    type: 'LIST_USERS'
-  }
-}
-
-export const setUsers = (newData) => {
-  return {
-    type: 'SET_USERS',
+    type: 'EDIT_USER',
     data: newData
   }
 }

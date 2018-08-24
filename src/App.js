@@ -59,8 +59,6 @@ class App extends Component {
   };
 
   render() {
-    console.log(this.state.hand);
-
     let activePlayer = this.props.users[this.props.game.activePlayer];
 
     return (

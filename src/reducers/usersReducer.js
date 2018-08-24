@@ -18,6 +18,9 @@ export default (state = [], action) => {
 
       return state;
 
+    case 'EDIT_USER':
+      action.data.socket.send(JSON.stringify({type: 'edit_user', data: action.data}));
+      return state;
     default:
       return state;
   }

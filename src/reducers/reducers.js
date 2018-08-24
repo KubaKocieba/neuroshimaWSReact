@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
-import users from './users'
-import game from './game'
-import board from './board'
+import users from './usersReducer'
+import game from './gameReducer'
+import board from './boardReducer'
 
 const Reducers = combineReducers({
   users,
   game,
-    board
+  board
 })
 
 export default Reducers;

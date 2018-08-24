@@ -58,6 +58,11 @@ wss.on('connection', function connection(ws) {
             ws.send(JSON.stringify({type: 'tooMany'}),ws);
           }
           break;
+        case 'edit_user':
+          users[message.data.whichInArray] = {...message.data};
+          broadcast({type: 'userList', users}, ws);
+          break;
+
       case 'detach_player':
         let {user, army} = message,
             player = {
@@ -109,9 +114,12 @@ wss.on('connection', function connection(ws) {
         break;
 
         case 'tile_set':
+          console.log(message);
             broadcast({
               type: 'tilePutOnBoard',
-              tile: message.data
+              tile: message.data,
+              byPlayer: activePlayer,
+              color: users[activePlayer].color
             }, ws);
             break;
 
@@ -122,6 +130,16 @@ wss.on('connection', function connection(ws) {
               users
             }, ws);
             break;
+
+        case 'player_ready':
+          let whichPlayerReady = users.findIndex(user => {
+            return user.name === message.data.name
+          });
+
+          users[whichPlayerReady].ready = message.data.ready;
+
+          broadcast({type: 'userList', users}, ws);
+          break;
 
       default:
         console.log('Unsupported message');

@@ -97,6 +97,14 @@ div#startHex::after {
   -webkit-text-stroke-color: black;
 }
 
+#startNameBtn{
+    margin-top: 20px;
+}
+
+.readyBtn{
+    margin-bottom: 10px;
+}
+
 .hex::after,
 .hex span{
   width: 50px;
@@ -116,4 +124,35 @@ div#startHex::after {
 
 .hex span:hover{
   -webkit-text-fill-color: white;
+}
+
+.errorText{
+  color: red;
+  font-size: 12px;
+}
+
+.playerInSetup{
+    border-radius: 10px;
+}
+
+.playerReadytrue{
+    border: solid 2px #2ad02a;
+    background: rgba(42, 208, 42, 0.1);
+}
+
+.playerReadyfalse{
+    border: solid 2px #ff0055;
+    background: rgba(255, 0, 85, 0.1);
+}
+
+.statusReady{
+    font-size: 12px;
+}
+
+.statusReady.true{
+    color: #2ad02a;
+}
+
+.statusReady.false{
+    color: #ff0055;
 }

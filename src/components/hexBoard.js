@@ -1,7 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import * as boardActions from '../actions/boardActions'
-import * as gameActions from '../actions/gameActions'
 
 import Hex from './hex';
 class hexBoard extends React.Component {
@@ -34,6 +33,8 @@ class hexBoard extends React.Component {
         var row = [];
         for (let x = 0;x <= j; x++){
             let key = fieldsOrder.shift();
+            console.log(key);
+
             row.push(
                 <Hex
                     fieldNumber={key}
