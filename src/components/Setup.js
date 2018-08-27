@@ -7,6 +7,16 @@ import * as boardActions from "../actions/boardActions";
 import {Armies} from '../helpers/armies';
 import _ from 'lodash';
 
+const colorsForPicker = [
+        '#9F0500',
+        '#B0BC00',
+        '#009CE0',
+        '#FCDC00',
+        '#000000',
+        '#AB149E',
+        '#f00000'
+];
+
 function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
@@ -135,16 +145,19 @@ class Init extends React.Component {
 
   componentDidUpdate(prevProps){
     if(this.props !== prevProps){
-    this.setState({
-      allAreReady: this.props.users.every(user=> !!user.ready)
-    });
+      this.setState({
+        allAreReady: this.props.users.every(user=> !!user.ready)
+      });
 
       if(this.state.allPlayers.findIndex(player =>{
         return player.color === this.state.user.color;
       }) !== -1 && !this.state.edit)
       {
         this.setState({
-          error: COLOR_ERROR_MESSAGE
+          user: {
+            ...this.state.user,
+            color: colorsForPicker[Math.floor(colorsForPicker.length * Math.random())]
+          }
         })
       }
       else{
@@ -292,6 +305,7 @@ class Init extends React.Component {
             <CompactPicker
               color={this.state.user.color}
               onChange={this.handleColorChange}
+              colors={colorsForPicker}
             />
             <button
               style={{display: 'block', margin: 'auto auto', marginTop: '10px'}}

@@ -1,12 +1,23 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import * as boardActions from '../actions/boardActions'
+import _ from 'lodash'
 
 import Hex from './hex';
+
+import { hexDirectionsChange } from '../helpers/hexDirections'
 class hexBoard extends React.Component {
+
+  state = {
+    tempHex: {}
+  }
 
   componentDidMount(){
       //console.log(this.state.board);
+  }
+
+  componentDidUpdate(prevProps){
+
   }
 
   onDropHandle = (event, onField) =>{
@@ -15,15 +26,48 @@ class hexBoard extends React.Component {
 
     let tileReceived = JSON.parse(event.dataTransfer.getData('text/plain'));
 
-    this.props.setTile({...tileReceived, target: onField}, this.props.game.socket);
-    this.props.tileRemoveFromHand(tileReceived);
+    this.setState({
+      tempHex: {
+        ...tileReceived,
+        target: onField,
+        color: this.props.users[this.props.game.activePlayer].color
+      }
+    });
   };
 
   onDragOverHandle = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    console.log('drag over');
   };
+
+  wheelHandle = (directions, event)=> {
+    this.setState({
+      tempHex: {
+        ...this.state.tempHex,
+        directions: hexDirectionsChange(directions, event.deltaY)
+      }
+    });
+  }
+
+  undoPut = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.setState({
+      tempHex: {}
+    })
+  }
+
+  setOnBoard = () => {
+    const tileReceived = {...this.state.tempHex, set: true};
+
+    this.setState({
+      tempHex: {}
+    })
+
+    this.props.setTile(tileReceived, this.props.game.socket);
+    this.props.tileRemoveFromHand(tileReceived);
+  }
 
 
   render() {
@@ -33,15 +77,21 @@ class hexBoard extends React.Component {
         var row = [];
         for (let x = 0;x <= j; x++){
             let key = fieldsOrder.shift();
-            console.log(key);
+
+            let params = this.props.board.fields[key];
 
             row.push(
                 <Hex
                     fieldNumber={key}
                     key={key}
                     drop={this.onDropHandle}
-                    grid={this.props.board.fields[key]}
-                    dragOverAction={this.onDragOverHandle}>
+                    givenTile={!_.isEmpty(this.state.tempHex) && this.state.tempHex.target === key ? this.state.tempHex : params.content}
+                    sides={params.sides}
+                    dragOverAction={this.onDragOverHandle}
+                    click={this.setOnBoard}
+                    wheel={this.wheelHandle}
+                    rightClick={this.undoPut}
+                    >
                 </Hex>
             );
         }
@@ -88,13 +138,15 @@ class hexBoard extends React.Component {
 const mapStateToProps = (state) => {
     return {
         board: state.board,
-        game: state.game
+        game: state.game,
+        users: state.users
     };
 };
 
 const mapActions = (dispatch) => {
   return {
-    setTile: (tile, socket) => dispatch(boardActions.setTile(tile, socket))
+    setTile: (tile, socket) => dispatch(boardActions.setTile(tile, socket)),
+    putTile: (tileObj) => dispatch(boardActions.putTile(tileObj))
   };
 };
 

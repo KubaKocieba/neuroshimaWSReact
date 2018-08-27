@@ -11,37 +11,47 @@ const switchUnitTillFirstAttack = () => {
 export const Armies = {
   'celestial' : [
     {
-      name: 'hqCelestial',power: directiveGauss ,hp:20
+      name: 'hqCelestial',power: directiveGauss ,hp:20,
+      directions: ['all']
     },
     { name: 'laserShooter',
       amount: 1,
-      speed: 2
+      speed: 2,
+      directions: ['u']
     },
     { name: 'armouredLaserShooter',
       amount: 1,
       speed: 1,
-      defense: 1
+      defense: 1,
+      directions: ['u']
     },
     { name: 'boost',
-      amount: 3
+      amount: 3,
+      directions: ['ul', 'dr']
     }
   ],
 
   'modesto' : [
     {
-      name: 'hqModesto', hp: 20, power: initiativeBoost
+      name: 'hqModesto',
+      hp: 20,
+      power: initiativeBoost,
+      directions: ['all']
     },
     { name: 'laserShooter',
       amount: 1,
-      speed: 2
+      speed: 2,
+      directions: ['u']
     },
     { name: 'armouredLaserShooter',
       amount: 1,
       speed: 1,
-      defense: 1
+      defense: 1,
+      directions: ['u']
     },
     { name: 'boost',
-      amount: 3
+      amount: 3,
+      directions: ['ul', 'dr']
     }
   ],
 
@@ -51,15 +61,18 @@ export const Armies = {
     },
     { name: 'laserShooter',
       amount: 1,
-      speed: 2
+      speed: 2,
+      directions: ['u']
     },
     { name: 'armouredLaserShooter',
       amount: 1,
       speed: 1,
-      defense: 1
+      defense: 1,
+      directions: ['u']
     },
     { name: 'boost',
-      amount: 3
+      amount: 3,
+      directions: ['ul', 'dr']
     }
   ]
 }

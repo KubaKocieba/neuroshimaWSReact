@@ -8,6 +8,8 @@ export const setTile = (tile, socket) => {
 };
 
 export const putTile = (tile) => {
+    console.log(tile);
+
     return {
       type: 'TILE_ONBOARD',
       which: tile.target,
