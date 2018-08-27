@@ -131,6 +131,11 @@ div#startHex::after {
   font-size: 12px;
 }
 
+.github-picker {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .playerInSetup{
     border-radius: 10px;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux'
-import { CompactPicker } from 'react-color'
+import { GithubPicker } from 'react-color'
 import {sendUser, setUsers, editUser} from '../actions/setUsers'
 import * as gameActions from '../actions/gameActions'
 import * as boardActions from "../actions/boardActions";
@@ -302,7 +302,8 @@ class Init extends React.Component {
       colorChoose = this.state.colorEdit ?
         (
           <div>
-            <CompactPicker
+            <GithubPicker
+              triangle="hide"
               color={this.state.user.color}
               onChange={this.handleColorChange}
               colors={colorsForPicker}

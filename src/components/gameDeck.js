@@ -19,8 +19,6 @@ class GameDeck extends React.Component{
       ...this.props.playerData
     };
 
-    // console.log(this.state);
-
     this.turn          = this.turn.bind(this);
     this.drawTiles     = this.drawTiles.bind(this);
   }
@@ -158,24 +156,21 @@ class GameDeck extends React.Component{
     ) : alert('Please remove 1 tile first');
   }
 
-  dragHandle(event){
-    event.preventDefault();
-    console.log('dragHandle');
-  }
 
   render(){
     let you = sessionStorage.getItem('player'),
         isYou = this.props.activePlayer.name === you,
-        yourTurnEndBtn = isYou ? <div><button onClick={this.finishTurn.bind(this)}>END TURN</button></div> : '' ,
+        yourTurnEndBtn = isYou ? <div><button disabled={Object.keys(this.state.hand).length  > 2 || this.state.hand.find(tile=>{
+          return tile.name.indexOf('hq') !== -1
+        }) } onClick={this.finishTurn.bind(this)}>END TURN</button></div> : '' ,
         whoIsActiveNow = isYou ? 'Your turn!!!' : 'Active player is: ',
         playerName = isYou ? sessionStorage.getItem('player') : this.props.activePlayer.name,
         tilesInHand = this.state.hand.map((tile, index) => {
             return (
-                <Tile dragStart={(ev)=> this.dragStartHandle(ev, tile)}
-                      dragFurther={this.dragHandle}
-                      name={tile.name} click={() => this.handleTileRemove(index)}
+                <Tile dragStart={isYou ? (ev)=> this.dragStartHandle(ev, tile) : null}
+                      dragFurther={isYou ? this.dragHandle : null}
+                      name={tile.name} click={isYou ? (() => this.handleTileRemove(index)) : null}
                       key={index}
-                      dragEnd={(ev)=> this.dragEnd(ev, tile)}
                 >
                 </Tile>);
         }) ;
