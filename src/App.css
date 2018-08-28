@@ -9,7 +9,7 @@
 
 .App-header {
   background-color: #222;
-  height: 150px;
+  height: 30px;
   padding: 20px;
   color: white;
 }
@@ -29,7 +29,6 @@ body{
 }
 
 #main{
-  height: 500px;
   width: 100%;
   /*
   padding-left: 50px;
@@ -75,26 +74,78 @@ div#startHex::after {
   cursor: pointer;
 }
 
+#main{
+  height: 50vh;
+}
+
+#setupPage{
+  height: 100%;
+  overflow-y: auto;
+}
+
+#player{
+  margin-top: 3vh;
+}
+
+#armySelection{
+  width: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+}
+
+.armySet{
+  width: 150px;
+  text-align: left;
+  padding: 3px;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+}
+
+.armySet span:nth-child(1){
+  margin-left: 20px;
+  margin-right: 20px;
+  text-align: left;
+}
+
+.armySet:hover{
+  border: 2px solid black;
+  border-radius: 5px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
 #hexCluster{
   transform: rotate(-90deg);
-  top: 50px;
-  width: 500px;
-  height: 500px;
-  margin-left: auto;
+  width: 50vh;
+  height: 50vh;
+  position: absolute;
   text-align: center;
+  left: 37vw;
 }
 
 #hexCluster div{
-  margin-top: -50px;
+  margin-top: -5vh;
+}
+
+#clusterContainer{
+  height: 55%;
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
 }
 
 .hex{
   display: inline;
-  font-size: 100px;
+  font-size: 11vh;
   color: black;
   -webkit-text-fill-color: white; /* Will override color (regardless of order) */
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: black;
+}
+
+.deck{
+  color: white;
 }
 
 #startNameBtn{
@@ -109,17 +160,17 @@ div#startHex::after {
 .hex span{
   width: 50px;
   position: absolute;
-  font-size: 14px;
+  font-size: 1.5vh;
   word-wrap: break-word;
   color: green;
   transform: rotate(90deg);
-  margin-top: 43px;
-  margin-left: -73px;
+  margin-top: 5.5vh;
+  margin-left: -8vh;
   -webkit-text-fill-color: black;
 }
 
 .hex:hover {
-  -webkit-text-fill-color: red;
+  -webkit-text-fill-color: #fcfb91;
 }
 
 .hex span:hover{

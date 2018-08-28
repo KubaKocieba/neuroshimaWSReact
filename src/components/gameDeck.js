@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import '../style/gameDeck.css'
 import * as gameActions from '../actions/gameActions'
+import * as boardActions from '../actions/boardActions'
 import Tile from './Tile'
 import {tilesFillWithRepeated} from '../helpers/assignArmies'
 import {Armies} from '../helpers/armies'
@@ -65,7 +66,6 @@ class GameDeck extends React.Component{
   }
 
   componentDidMount(){
-    console.log('mounted');
     this.turn(this.props.activePlayer.name);
   }
 
@@ -86,7 +86,41 @@ class GameDeck extends React.Component{
   finishTurn = () => {
     clearInterval(time);
     this.setState({timer: null});
-    //this.props.game.socket.send(JSON.stringify({type: 'next_player'}));
+
+    const isHqStillOnHand = this.state.hand.findIndex(tile=>{
+      return tile.name.indexOf('hq') !== -1;
+    });
+
+    if(isHqStillOnHand !== -1 || this.state.hand.length === 3){
+      var findFreeField = () => {
+        let freeFieldsArr = [];
+
+        Object.keys(this.props.board.fields)
+        .forEach(field=>{
+          if (!this.props.board.fields[field].content){
+            freeFieldsArr.push(field);
+          }
+        });
+
+        return freeFieldsArr[Math.round(Math.random() * freeFieldsArr.length)];
+      };
+
+      const tileReceived = {
+        ...this.state.hand[isHqStillOnHand !== -1 ? isHqStillOnHand : Math.round(Math.random()*3)],
+        color: this.props.users[this.props.game.activePlayer].color,
+        set:true,
+        target: findFreeField()
+      };
+
+
+      if (isHqStillOnHand !== -1){
+        this.props.setTile(tileReceived, this.props.game.socket);
+      }
+
+      this.props.tileRemoveFromHand(tileReceived);
+    }
+
+
     this.props.nextPlayer(this.props.game.socket, this.state);
   }
 
@@ -176,7 +210,7 @@ class GameDeck extends React.Component{
         }) ;
 
     return (
-        <div>
+        <div className="deck">
           <h1>{whoIsActiveNow}</h1><p> Player {playerName}</p>
           <p>Your hand:</p>
           <div className="slots">
@@ -191,7 +225,8 @@ class GameDeck extends React.Component{
 
 const mapActions = (dispatch) =>{
   return {
-    nextPlayer: (socket, playerData) => dispatch(gameActions.nextPlayer(socket,playerData))
+    nextPlayer: (socket, playerData) => dispatch(gameActions.nextPlayer(socket,playerData)),
+    setTile: (tile, socket) => dispatch(boardActions.setTile(tile, socket))
   }
 }
 
@@ -199,7 +234,8 @@ const mapActions = (dispatch) =>{
 const mapStateToProps = (state) => {
   return {
     users: state.users,
-    game:  state.game
+    game:  state.game,
+    board: state.board
   }
 }
 

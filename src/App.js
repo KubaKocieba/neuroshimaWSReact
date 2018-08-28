@@ -49,9 +49,6 @@ class App extends Component {
   handAddTiles = (tiles) => {
     var currHand = this.state.hand.slice();
 
-    console.log(currHand);
-    console.log(tiles);
-
     this.setState({
       ...this.state,
       hand: tiles
@@ -64,7 +61,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">KTactics</h1>
+          <div className="App-title"><strong>KTactics</strong></div>
         </header>
         <div id="main">
         { !this.state.started ? (

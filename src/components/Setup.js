@@ -5,6 +5,7 @@ import {sendUser, setUsers, editUser} from '../actions/setUsers'
 import * as gameActions from '../actions/gameActions'
 import * as boardActions from "../actions/boardActions";
 import {Armies} from '../helpers/armies';
+import {capitalize} from '../helpers/others';
 import _ from 'lodash';
 
 const colorsForPicker = [
@@ -149,21 +150,23 @@ class Init extends React.Component {
         allAreReady: this.props.users.every(user=> !!user.ready)
       });
 
-      if(this.state.allPlayers.findIndex(player =>{
-        return player.color === this.state.user.color;
-      }) !== -1 && !this.state.edit)
-      {
-        this.setState({
-          user: {
-            ...this.state.user,
-            color: colorsForPicker[Math.floor(colorsForPicker.length * Math.random())]
-          }
-        })
-      }
-      else{
-        this.setState({
-          error: null
-        })
+      if(!this.state.edit){
+        if(this.state.allPlayers.findIndex(player =>{
+          return player.color === this.state.user.color;
+        }) !== -1 && !this.state.edit)
+        {
+          this.setState({
+            user: {
+              ...this.state.user,
+              color: colorsForPicker[Math.floor(colorsForPicker.length * Math.random())]
+            }
+          })
+        }
+        else{
+          this.setState({
+            error: null
+          })
+        }
       }
     }
   }
@@ -176,16 +179,18 @@ class Init extends React.Component {
       }
     });
 
-    if(this.state.allPlayers.findIndex(player =>{
-      return player.name === event.target.value;
-    }) === -1){
-      this.setState({
-      error: null,
-      });
-    }else{
-      this.setState({
-        error: NAME_ERROR_MESSAGE
-      });
+    if(!this.state.edit){
+      if(this.state.allPlayers.findIndex(player =>{
+        return player.name === event.target.value;
+      }) === -1){
+        this.setState({
+        error: null,
+        });
+      }else{
+        this.setState({
+          error: NAME_ERROR_MESSAGE
+        });
+      }
     }
   }
 
@@ -227,11 +232,11 @@ class Init extends React.Component {
     });
   }
 
-  setArmy(event){
+  setArmy(event, army){
     this.setState({
       user: {
         ...this.state.user,
-        army: event.target.id,
+        army: army,
       }
     }
     );
@@ -332,7 +337,7 @@ class Init extends React.Component {
           pl = (
             <div className={'playerInSetup playerReady' + user.ready} key={`${index}_${user.name}_${user.army}_${user.color}`}>
               <p>Player {index + 1}:</p>
-              <p style={playerColor}>{user.name}</p><p>{user.army}</p>
+              <p style={playerColor}>{user.name}</p><p>{user.army.capitalize()}</p>
               <p className={'statusReady ' + user.ready}>{user.ready ? 'Ready' :'Not ready'}</p>
             </div>
           );
@@ -348,7 +353,7 @@ class Init extends React.Component {
               <div onClick={this.changePlayerData.bind(this)}
                    key={`${index}_${user.name}_${user.army}`}>
                 <p style={playerColor}>{user.name}</p>
-                <p>{user.army}</p>
+                <p>{user.army.capitalize()}</p>
                 <p className={'statusReady ' + user.ready}>{user.ready ? 'Ready' : 'Not Ready'} to play</p>
               </div>
               <button className="readyBtn" onClick={this.submitReady}>{!user.ready ? 'Ready' : 'Not Ready'}</button>
@@ -357,6 +362,11 @@ class Init extends React.Component {
         }
 
         return pl;
+      }),
+      armySelection = Object.keys(Armies).map(army => {
+        return (
+            <div className="armySet" key={'army' + army} onClick={(event) => { this.setArmy(event, army)}} ><span id={army}>{army.capitalize()}{this.state.user.army === army ? (<span style={{color: this.state.user.color}}>&#x2B22;</span>) : null} </span></div>
+          )
       });
 
     return (
@@ -366,7 +376,7 @@ class Init extends React.Component {
               <div id="player">
                 <label>You: </label>
                 <p>
-                  <input disabled={this.state.colorEdit || this.state.error === COLOR_ERROR_MESSAGE} onChange={this.playerInput.bind(this)}  type="text" id="playerId" />
+                  <input value={this.state.user.name} disabled={this.state.colorEdit || this.state.error === COLOR_ERROR_MESSAGE} onChange={this.playerInput.bind(this)}  type="text" id="playerId" />
                 </p>
                 <p>
                   <span className="errorText">{this.state.error}</span>
@@ -374,9 +384,7 @@ class Init extends React.Component {
                 <div>Choose color: {colorChoose}</div>
                 <p><label>Army:</label></p>
                 <div id="armySelection">
-                  <div  onClick={this.setArmy.bind(this)}><span id="celestial">Celestial</span></div>
-                  <div  onClick={this.setArmy.bind(this)}><span id="modesto">Modesto</span></div>
-                  <div  onClick={this.setArmy.bind(this)}><span id="liar">Liar</span></div>
+                  {armySelection}
                 </div>
                 <button disabled={this.state.error || this.state.colorEdit || !this.state.user.name} onClick={() => {this.state.edit ? this.editPlayer() : this.playerAdd()}}>Confirm</button>
               </div>) : ''

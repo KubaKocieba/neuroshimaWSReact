@@ -125,12 +125,14 @@ class hexBoard extends React.Component {
       }
 
       return rows;
-  }
+  };
 
   return (
+    <div id="clusterContainer">
       <div id="hexCluster">
           {fillHexes()}
       </div>
+    </div>
     );
   }
 }
