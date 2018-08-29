@@ -115,34 +115,10 @@ div#startHex::after {
   cursor: pointer;
 }
 
-#hexCluster{
-  transform: rotate(-90deg);
-  width: 50vh;
-  height: 50vh;
-  position: absolute;
-  text-align: center;
-  left: 37vw;
+#hexBoard{
+  margin-top: 10px;
 }
 
-#hexCluster div{
-  margin-top: -5vh;
-}
-
-#clusterContainer{
-  height: 55%;
-  position: absolute;
-  overflow: hidden;
-  width: 100%;
-}
-
-.hex{
-  display: inline;
-  font-size: 11vh;
-  color: black;
-  -webkit-text-fill-color: white; /* Will override color (regardless of order) */
-  -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: black;
-}
 
 .deck{
   color: white;

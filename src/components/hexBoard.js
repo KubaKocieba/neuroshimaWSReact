@@ -2,10 +2,31 @@ import React from 'react'
 import {connect} from 'react-redux'
 import * as boardActions from '../actions/boardActions'
 import _ from 'lodash'
-
-import Hex from './hex';
+// import Hex from './hex';
+import * as Honeycomb from 'honeycomb-grid'
 
 import { hexDirectionsChange } from '../helpers/hexDirections'
+import HexSVG from './HexSVG'
+import * as SVG from 'svg.js'
+
+
+const HEX_SIZE = 50;
+
+const Hex = Honeycomb.extendHex({ size: HEX_SIZE , orientation: 'flat'}),
+      corners = () => {
+          let pointsArray = [];
+
+          Object.values(Hex().corners()).forEach(value=>{
+            pointsArray.push(value.x);
+            pointsArray.push(value.y);
+          });
+
+          return pointsArray;
+
+      },
+      Grid = Honeycomb.defineGrid(Hex),
+      hexGrid = Grid.hexagon({ radius: 2 });
+
 class hexBoard extends React.Component {
 
   state = {
@@ -14,6 +35,7 @@ class hexBoard extends React.Component {
 
   componentDidMount(){
       //console.log(this.state.board);
+      console.log(SVG.get('hexBoard'));
   }
 
   componentDidUpdate(prevProps){
@@ -23,6 +45,8 @@ class hexBoard extends React.Component {
   onDropHandle = (event, onField) =>{
     event.preventDefault();
     event.stopPropagation();
+
+    console.log(onField);
 
     let tileReceived = JSON.parse(event.dataTransfer.getData('text/plain'));
 
@@ -38,6 +62,7 @@ class hexBoard extends React.Component {
   onDragOverHandle = (event) => {
     event.preventDefault();
     event.stopPropagation();
+
   };
 
   wheelHandle = (directions, event)=> {
@@ -71,68 +96,49 @@ class hexBoard extends React.Component {
 
 
   render() {
-    var fieldsOrder = [3,2,1,7,6,5,4,12,11,10,9,8,16,15,14,13,19,18,17];
+    var fieldsOrder = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
 
-    const fields = (i,j) => {
-        var row = [];
-        for (let x = 0;x <= j; x++){
+    return (
+      <svg id="hexBoard"
+           width={8*HEX_SIZE + 5 + 'px'}
+           height={5*Math.sqrt(3)*HEX_SIZE + 10 + 'px'}
+           xmlns="http://www.w3.org/2000/svg"
+           version="1.1"
+      >
+        <defs id={'hexDefs1002'}></defs>
+        <symbol id="hexSybmbol">
+          <polygon id="hexPolygon" points={corners().toString()}></polygon>
+        </symbol>
+        {
+          hexGrid.map((hex,index) =>{
+            const { x, y } = hex.toPoint();
+
             let key = fieldsOrder.shift();
 
             let params = this.props.board.fields[key];
 
-            row.push(
-                <Hex
-                    fieldNumber={key}
-                    key={key}
-                    drop={this.onDropHandle}
-                    givenTile={!_.isEmpty(this.state.tempHex) && this.state.tempHex.target === key ? this.state.tempHex : params.content}
-                    sides={params.sides}
-                    dragOverAction={this.onDragOverHandle}
-                    click={this.setOnBoard}
-                    wheel={this.wheelHandle}
-                    rightClick={this.undoPut}
-                    >
-                </Hex>
-            );
+            return (
+              <HexSVG
+                fieldNumber={key}
+                key={`hex${index}`}
+                text={params.name}
+                usePoints={`${x+3*HEX_SIZE}, ${y+3.5*HEX_SIZE}`}
+                textPoints={{x: x+4*HEX_SIZE, y: y+4*HEX_SIZE}}
+                fill={'white'}
+                stroke={{ width: 2, color: '#000' }}
+                corners={corners().toString()}
+                drop={this.onDropHandle}
+                givenTile={!_.isEmpty(this.state.tempHex) && this.state.tempHex.target === key ? this.state.tempHex : params.content}
+                sides={params.sides}
+                dragOverAction={this.onDragOverHandle}
+                click={this.setOnBoard}
+                wheel={this.wheelHandle}
+                rightClick={this.undoPut}
+              />
+              )
+          })
         }
-
-        return row;
-  };
-
-  const fillHexes = () => {
-      var rows = [];
-
-      for(let i = 0; i <= 4 ; i++){
-        let j;
-
-        switch(i){
-          case 0:
-          case 4:
-            j = 2;
-            break;
-          case 1:
-          case 3:
-            j = 3;
-            break;
-          case 2:
-            j = 4;
-            break;
-          default:
-              break;
-        }
-
-        rows.push(<div key={i}>{fields(i,j)}</div> )
-      }
-
-      return rows;
-  };
-
-  return (
-    <div id="clusterContainer">
-      <div id="hexCluster">
-          {fillHexes()}
-      </div>
-    </div>
+      </svg>
     );
   }
 }

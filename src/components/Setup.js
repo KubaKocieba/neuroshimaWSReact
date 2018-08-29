@@ -8,12 +8,13 @@ import {Armies} from '../helpers/armies';
 import {capitalize} from '../helpers/others';
 import _ from 'lodash';
 
+import HexGridSVGjs from './HexGridSVGjs'
+
 const colorsForPicker = [
         '#9F0500',
         '#B0BC00',
         '#009CE0',
         '#FCDC00',
-        '#000000',
         '#AB149E',
         '#f00000'
 ];
@@ -30,6 +31,7 @@ function hexToRgb(hex) {
 const COLOR_ERROR_MESSAGE = 'Please use another color, this one is already taken';
 const NAME_ERROR_MESSAGE = 'Please put an unique name, this one is already in use';
 
+
 var ws;
 
 class Init extends React.Component {
@@ -40,7 +42,7 @@ class Init extends React.Component {
       user:{
         name: '',
         army: 'celestial',
-        color: '#000000',
+        color:  colorsForPicker[Math.round(Math.random() * colorsForPicker.length)],
         whichInArray: null,
         ready: false
       },
@@ -55,6 +57,9 @@ class Init extends React.Component {
   }
 
   componentDidMount(){
+
+    //gridBySVGjs();
+
     ws = new WebSocket('ws://10.0.166.67:8989');
 
     this.props.saveSocket(ws);
@@ -371,6 +376,7 @@ class Init extends React.Component {
 
     return (
       <div id="setupPage">
+    <HexGridSVGjs />
         <div id="players">
             {this.state.edit || (!this.state.sent && !sessionStorage.getItem('player')) ? (
               <div id="player">
