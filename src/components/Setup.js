@@ -139,7 +139,6 @@ class Init extends React.Component {
           break;
 
         case 'tilePutOnBoard':
-          console.log(data);
           this.props.putTile({...data.tile, byPlayer: data.byPlayer, color: data.color});
           break;
 

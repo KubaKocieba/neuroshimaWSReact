@@ -4,7 +4,6 @@ import * as boardActions from '../actions/boardActions'
 import _ from 'lodash'
 // import Hex from './hex';
 
-
 import { hexDirectionsChange } from '../helpers/hexDirections'
 
 //HexboardSVG
@@ -40,8 +39,20 @@ class hexBoard extends React.Component {
   }
 
   componentDidMount(){
-      //console.log(this.state.board);
-      //console.log(SVG.get('hexBoard'));
+      window.onresize = () => {
+        var main = document.getElementById('main');
+
+        var main = {
+          h: main.offsetHeight,
+          w: main.offsetWidth
+        }
+
+        var factor = Math.min((main.h-10)/(5*Math.sqrt(3)*HEX_SIZE + 10), (main.w-10)/(8*HEX_SIZE + 5));
+
+        console.log(factor);
+
+        document.getElementById('hexBoard').style.transform = `scale(${factor})`;
+     };
   }
 
   componentDidUpdate(prevProps){
@@ -108,6 +119,12 @@ class hexBoard extends React.Component {
            height={5*Math.sqrt(3)*HEX_SIZE + 10 + 'px'}
            xmlns="http://www.w3.org/2000/svg"
            version="1.1"
+           style={
+            {
+              transformOrigin: 'top',
+              transform: `scale(${Math.min(1)})`
+            }
+          }
       >
         <defs id={'hexDefs1002'}></defs>
         <symbol id="hexSybmbol">

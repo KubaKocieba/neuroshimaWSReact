@@ -13,7 +13,6 @@ export default (state = {
       return state;
 
     case'NEXT_PLAYER_STARTED':
-      console.log(action);
       return {...state, activePlayer: action.activePlayer, playerData: action.playerData};
 
       case 'LAST_ROUND':
