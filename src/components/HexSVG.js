@@ -1,4 +1,6 @@
 import React from 'react';
+import {HEX_SIZE} from './hexBoard'
+import {directionsDraw} from '../helpers/others';
 
 class HexSVG extends React.Component{
 
@@ -8,30 +10,11 @@ class HexSVG extends React.Component{
           onBoard    = hex.givenTile,
           alreadySet = onBoard && onBoard.set;
 
-    var   directionsDraw = null;
-
-
-    if (onBoard && onBoard.directions){
-      const directions = onBoard.directions;
-
-      var dirs = [];
-
-      if (directions.length === 1 && directions[0] === "all"){
-
-        console.log('all');
-
-        const getDirs = [1,2,3,4,5].map(el => {
-            return <polygon points="0,30 0,0 30,0" transform={transform}></polygon>;
-        });
-
-        directionsDraw = getDirs;
-      }
-    }
-
-    console.log(directionsDraw);
+    var   directions = directionsDraw(onBoard.directions, HEX_SIZE, transform);
 
     return (
-      [<use
+      <g>
+      <use
         onClick={()=>{console.log('click')}}
         fill={onBoard ? onBoard.color : hex.fill}
         stroke={hex.stroke.color}
@@ -45,12 +28,12 @@ class HexSVG extends React.Component{
         onContextMenu={hex.rightClick}
         onWheel={onBoard && onBoard.directions[0] !== 'all' && !alreadySet ? ((event) => {hex.wheel(onBoard.directions, event)}) : null}
       >
-      </use>,
-      <text transform={transform}>
-        <tspan x={50} y={50} textAnchor="middle" alignmentBaseline="central" textLength="80" lengthAdjust="spacingAndGlyphs">{onBoard ? onBoard.name : null}</tspan>
-      </text>,
-      !!directionsDraw ? directionsDraw : ''
-      ]
+      </use>
+      <text fontSize="12px" transform={transform}>
+        <tspan x={50} y={50} textAnchor="middle" alignmentBaseline="central" textLength="50" lengthAdjust="spacingAndGlyphs">{onBoard ? onBoard.name : null}</tspan>
+      </text>
+      {!!directions ? directions : ''}
+      </g>
     )
   }
 }

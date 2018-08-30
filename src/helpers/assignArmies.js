@@ -11,5 +11,5 @@ export const tilesFillWithRepeated = (tiles) => {
     return res;
   }, []);
 
-  return [Armies[sessionStorage.getItem('army')][0], ...setTiles];
+  return [tiles[0], ...setTiles];
 }

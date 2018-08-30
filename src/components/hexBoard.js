@@ -3,14 +3,20 @@ import {connect} from 'react-redux'
 import * as boardActions from '../actions/boardActions'
 import _ from 'lodash'
 // import Hex from './hex';
-import * as Honeycomb from 'honeycomb-grid'
+
 
 import { hexDirectionsChange } from '../helpers/hexDirections'
+
+//HexboardSVG
+
 import HexSVG from './HexSVG'
-import * as SVG from 'svg.js'
+// import * as SVG from 'svg.js'
+import * as Honeycomb from 'honeycomb-grid'
+
+//
 
 
-const HEX_SIZE = 50;
+export const HEX_SIZE = 50;
 
 const Hex = Honeycomb.extendHex({ size: HEX_SIZE , orientation: 'flat'}),
       corners = () => {
@@ -35,7 +41,7 @@ class hexBoard extends React.Component {
 
   componentDidMount(){
       //console.log(this.state.board);
-      console.log(SVG.get('hexBoard'));
+      //console.log(SVG.get('hexBoard'));
   }
 
   componentDidUpdate(prevProps){
@@ -45,8 +51,6 @@ class hexBoard extends React.Component {
   onDropHandle = (event, onField) =>{
     event.preventDefault();
     event.stopPropagation();
-
-    console.log(onField);
 
     let tileReceived = JSON.parse(event.dataTransfer.getData('text/plain'));
 
@@ -123,6 +127,7 @@ class hexBoard extends React.Component {
                 key={`hex${index}`}
                 text={params.name}
                 usePoints={`${x+3*HEX_SIZE}, ${y+3.5*HEX_SIZE}`}
+                transform={{x: x+3*HEX_SIZE, y: y+3.5*HEX_SIZE}}
                 textPoints={{x: x+4*HEX_SIZE, y: y+4*HEX_SIZE}}
                 fill={'white'}
                 stroke={{ width: 2, color: '#000' }}

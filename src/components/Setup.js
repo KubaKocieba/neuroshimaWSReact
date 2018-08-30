@@ -8,7 +8,8 @@ import {Armies} from '../helpers/armies';
 import {capitalize} from '../helpers/others';
 import _ from 'lodash';
 
-import HexGridSVGjs from './HexGridSVGjs'
+// import HexGridSVGjs from './HexGridSVGjs'
+
 
 const colorsForPicker = [
         '#9F0500',
@@ -42,7 +43,7 @@ class Init extends React.Component {
       user:{
         name: '',
         army: 'celestial',
-        color:  colorsForPicker[Math.round(Math.random() * colorsForPicker.length)],
+        color:  colorsForPicker[Math.floor(Math.random() * colorsForPicker.length)],
         whichInArray: null,
         ready: false
       },
@@ -327,8 +328,10 @@ class Init extends React.Component {
           </div>)
         : <span
             onClick={() => {
-              !this.state.error || this.state.error === COLOR_ERROR_MESSAGE ? this.setState({colorEdit: true}) : null;
-              }}
+              if(!this.state.error || this.state.error === COLOR_ERROR_MESSAGE){
+                this.setState({colorEdit: true});
+              }
+            }}
             style={colorSelStyle}></span>,
       showPlayers = this.props.users.map((user, index)=>{
         var rgbColor = hexToRgb(user.color),
@@ -376,7 +379,6 @@ class Init extends React.Component {
 
     return (
       <div id="setupPage">
-    <HexGridSVGjs />
         <div id="players">
             {this.state.edit || (!this.state.sent && !sessionStorage.getItem('player')) ? (
               <div id="player">

@@ -6,6 +6,7 @@ import * as boardActions from '../actions/boardActions'
 import Tile from './Tile'
 import {tilesFillWithRepeated} from '../helpers/assignArmies'
 import {Armies} from '../helpers/armies'
+import {findFreeField} from '../helpers/others'
 
 var time;
 
@@ -92,24 +93,11 @@ class GameDeck extends React.Component{
     });
 
     if(isHqStillOnHand !== -1 || this.state.hand.length === 3){
-      var findFreeField = () => {
-        let freeFieldsArr = [];
-
-        Object.keys(this.props.board.fields)
-        .forEach(field=>{
-          if (!this.props.board.fields[field].content){
-            freeFieldsArr.push(field);
-          }
-        });
-
-        return freeFieldsArr[Math.round(Math.random() * freeFieldsArr.length)];
-      };
-
       const tileReceived = {
         ...this.state.hand[isHqStillOnHand !== -1 ? isHqStillOnHand : Math.round(Math.random()*3)],
         color: this.props.users[this.props.game.activePlayer].color,
         set:true,
-        target: findFreeField()
+        target: findFreeField(this.props.board.fields)
       };
 
 
