@@ -7,6 +7,8 @@ import Tile from './Tile'
 import {tilesFillWithRepeated} from '../helpers/assignArmies'
 import {Armies} from '../helpers/armies'
 import {findFreeField} from '../helpers/others'
+import HexHandSVG from './HexHand'
+
 
 var time;
 
@@ -173,9 +175,14 @@ class GameDeck extends React.Component{
   }
 
   dragStartHandle(event, tile){
+    if (this.props.activePlayer.name !== sessionStorage.getItem('player')){
+      return;
+    }
+
     this.state.hand.length < 3 ? (
       event.dataTransfer.setData('text/plain', JSON.stringify(tile))
     ) : alert('Please remove 1 tile first');
+
   }
 
 
@@ -189,12 +196,16 @@ class GameDeck extends React.Component{
         playerName = isYou ? sessionStorage.getItem('player') : this.props.activePlayer.name,
         tilesInHand = this.state.hand.map((tile, index) => {
             return (
-                <Tile dragStart={isYou ? (ev)=> this.dragStartHandle(ev, tile) : null}
-                      dragFurther={isYou ? this.dragHandle : null}
-                      name={tile.name} click={isYou ? (() => this.handleTileRemove(index)) : null}
-                      key={index}
+                <HexHandSVG
+                  dragStart={(ev)=> this.dragStartHandle(ev, tile)}
+                  name={tile.name}
+                  click={isYou ? (() => this.handleTileRemove(index)) : null}
+                  key={index}
+                  directions={tile.directions}
+                  stroke={"#000000"}
+                  fill={this.state.color}
                 >
-                </Tile>);
+                </HexHandSVG>);
         }) ;
 
     return (

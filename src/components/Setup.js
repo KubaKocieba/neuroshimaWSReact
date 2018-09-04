@@ -7,6 +7,9 @@ import * as boardActions from "../actions/boardActions";
 import {Armies} from '../helpers/armies';
 import {capitalize} from '../helpers/others';
 import _ from 'lodash';
+//import Hexagon from 'react-hexagon'
+//import HexHand from './HexHand'
+//import {HEX_SIZE} from "./hexBoard";
 
 // import HexGridSVGjs from './HexGridSVGjs'
 
@@ -58,10 +61,7 @@ class Init extends React.Component {
   }
 
   componentDidMount(){
-
-    //gridBySVGjs();
-
-    ws = new WebSocket('ws://10.0.166.67:8989');
+        ws = new WebSocket('ws://10.10.31.173:8989');
 
     this.props.saveSocket(ws);
 
@@ -210,9 +210,10 @@ class Init extends React.Component {
     }
 
     this.setState({
-      ...this.state,
       sent: true
     });
+
+    this.props.setPlayerColor(this.state.user.color);
 
     sessionStorage.setItem('player', this.state.user.name);
     sessionStorage.setItem('army', this.state.user.army);
@@ -223,6 +224,8 @@ class Init extends React.Component {
     sessionStorage.setItem('player', this.state.user.name);
     sessionStorage.setItem('army', this.state.user.army);
     sessionStorage.setItem('color', this.state.user.color);
+
+    this.props.setPlayerColor(this.state.user.color);
 
     if (this.state.sent){
       this.props.editUser({
@@ -277,11 +280,16 @@ class Init extends React.Component {
   handleColorChange = (color) => {
     let data = {...this.state.user};
 
-    data.color = color.hex;
+    data = {
+      ...data,
+      color: color.hex
+    };
 
     this.setState({
       user: data
     });
+
+    console.log(color.hex);
 
     if(this.state.allPlayers.findIndex(player =>{
       return player.color === color.hex;
@@ -400,7 +408,6 @@ class Init extends React.Component {
 
         </div>
         <button id="startNameBtn" disabled={this.props.users.length < 2 || !this.state.allAreReady} onClick={this.startGame }>Start</button>
-
       </div>
       )
   }

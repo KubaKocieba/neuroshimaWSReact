@@ -153,6 +153,11 @@ div#startHex::after {
   -webkit-text-fill-color: white;
 }
 
+.handHex {
+    width: 100px;
+    height: 100px;
+}
+
 .errorText{
   color: red;
   font-size: 12px;

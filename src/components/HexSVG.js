@@ -10,7 +10,7 @@ class HexSVG extends React.Component{
           onBoard    = hex.givenTile,
           alreadySet = onBoard && onBoard.set;
 
-    var   directions = directionsDraw(onBoard.directions, HEX_SIZE, transform);
+    var   directions = onBoard ? directionsDraw(onBoard.directions, HEX_SIZE, transform) : null;
 
     return (
       <g>

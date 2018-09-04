@@ -74,8 +74,6 @@ export const directionsDraw = (tileDirections, hexSize, transform) => {
                    ></polyline>;
         });
 
-        console.log(getDirs);
-
         return getDirs;
     }
 }

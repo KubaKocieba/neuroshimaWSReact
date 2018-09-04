@@ -16,7 +16,8 @@ class App extends Component {
 
   state = {
     started: true,
-    hand: []
+    hand: [],
+    color: null
   };
 
   start(){
@@ -55,6 +56,12 @@ class App extends Component {
     });
   };
 
+  setPlayerColor = (color) => {
+    this.setState({
+      color: color
+    })
+  }
+
   render() {
     let activePlayer = this.props.users[this.props.game.activePlayer];
 
@@ -71,7 +78,7 @@ class App extends Component {
             </div>
             <div id="clickInfo">To get started, click on the hex.</div>
             </div>
-          ) : (!this.props.game.started ? <Setup /> : <HexBoard tileRemoveFromHand={this.handRemove} board={this.props.board} activePlayer={activePlayer} /> )
+          ) : (!this.props.game.started ? <Setup setPlayerColor={this.setPlayerColor}/> : <HexBoard tileRemoveFromHand={this.handRemove} board={this.props.board} activePlayer={activePlayer} /> )
         }
         </div>
         {

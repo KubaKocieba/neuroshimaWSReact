@@ -2,18 +2,11 @@ import React from 'react'
 import {connect} from 'react-redux'
 import * as boardActions from '../actions/boardActions'
 import _ from 'lodash'
-// import Hex from './hex';
 
 import { hexDirectionsChange } from '../helpers/hexDirections'
 
-//HexboardSVG
-
 import HexSVG from './HexSVG'
-// import * as SVG from 'svg.js'
 import * as Honeycomb from 'honeycomb-grid'
-
-//
-
 
 export const HEX_SIZE = 50;
 
@@ -49,8 +42,6 @@ class hexBoard extends React.Component {
 
         var factor = Math.min((main.h-10)/(5*Math.sqrt(3)*HEX_SIZE + 10), (main.w-10)/(8*HEX_SIZE + 5));
 
-        console.log(factor);
-
         document.getElementById('hexBoard').style.transform = `scale(${factor})`;
      };
   }
@@ -63,15 +54,28 @@ class hexBoard extends React.Component {
     event.preventDefault();
     event.stopPropagation();
 
-    let tileReceived = JSON.parse(event.dataTransfer.getData('text/plain'));
+    const data = event.dataTransfer.getData('text/plain');
 
-    this.setState({
-      tempHex: {
-        ...tileReceived,
-        target: onField,
-        color: this.props.users[this.props.game.activePlayer].color
+    const isJsonString = (str) => {
+      try {
+        JSON.parse(str);
+      } catch (e) {
+        return false;
       }
-    });
+      return true;
+    };
+
+    if (data && isJsonString(data)){
+      let tileReceived = JSON.parse(data);
+
+      this.setState({
+        tempHex: {
+          ...tileReceived,
+          target: onField,
+          color: this.props.users[this.props.game.activePlayer].color
+        }
+      });
+    }
   };
 
   onDragOverHandle = (event) => {
@@ -95,11 +99,15 @@ class hexBoard extends React.Component {
 
     this.setState({
       tempHex: {}
-    })
+    });
   }
 
   setOnBoard = () => {
     const tileReceived = {...this.state.tempHex, set: true};
+
+    if (_.isEmpty(this.state.tempHex)){
+      return;
+    }
 
     this.setState({
       tempHex: {}
@@ -122,7 +130,7 @@ class hexBoard extends React.Component {
            style={
             {
               transformOrigin: 'top',
-              transform: `scale(${Math.min(1)})`
+              transform: `scale(0.85)`
             }
           }
       >
